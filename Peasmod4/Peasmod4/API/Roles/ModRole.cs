@@ -11,8 +11,10 @@ public class ModRole : RoleBehaviour
 
     public override bool CanUse(IUsable console)
     {
-        if (PlayerControl.LocalPlayer.IsCustomRole())
+        var role = PlayerControl.LocalPlayer.GetCustomRole();
+        if (role != null && role.CanVent)
         {
+            this.CanVent = role.CanVent;
             return console.TryCast<Vent>() != null;
         }
         

@@ -100,15 +100,12 @@ public class CustomButton
         if (PlayerControl.LocalPlayer.Data == null) 
             return false;
             
-        //PeasmodPlugin.Logger.LogInfo("Button 1");
         if (MeetingHud.Instance != null) 
             return false;
 
-        //PeasmodPlugin.Logger.LogInfo("Button 2");
         if (MapBehaviour.Instance != null && MapBehaviour.Instance.IsOpen)
             return false;
 
-        //PeasmodPlugin.Logger.LogInfo("Button 3");
         return CouldUse.Invoke(PlayerControl.LocalPlayer);
     }
 

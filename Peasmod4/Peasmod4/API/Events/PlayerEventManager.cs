@@ -14,4 +14,19 @@ public class PlayerEventManager
             ExiledPlayer = exiledPlayer;
         }
     }
+    
+    public static EventHandler<PlayerMurderedEventArgs> PlayerMurderedEventHandler;
+    public class PlayerMurderedEventArgs : EventArgs
+    {
+        public PlayerControl Killer;
+        public PlayerControl Victim;
+        public MurderResultFlags Flags;
+
+        public PlayerMurderedEventArgs(PlayerControl killer, PlayerControl victim, MurderResultFlags flags)
+        {
+            Killer = killer;
+            Victim = victim;
+            Flags = flags;
+        }
+    }
 }

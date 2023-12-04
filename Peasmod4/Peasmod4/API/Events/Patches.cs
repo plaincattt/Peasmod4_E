@@ -45,4 +45,11 @@ public class Patches
     {
         PlayerEventManager.PlayerExiledEventHandler?.Invoke(null, new PlayerEventManager.PlayerExiledEventArgs(__instance));
     }
+    
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.MurderPlayer))]
+    public static void PlayerMurderedPatch(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl victim, [HarmonyArgument(1)] MurderResultFlags flags)
+    {
+        PlayerEventManager.PlayerMurderedEventHandler?.Invoke(null, new PlayerEventManager.PlayerMurderedEventArgs(__instance, victim, flags));
+    }
 }
