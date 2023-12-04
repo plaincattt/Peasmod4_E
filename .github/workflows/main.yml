@@ -24,4 +24,4 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: Peasmod4.dll
-          path: Peasmod4/bin/Release/netstandard2.1/Peasmod4.dll
+          path: Peasmod4/bin/Release/net6.0/Peasmod4.dll
