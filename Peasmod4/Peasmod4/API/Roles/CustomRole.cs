@@ -49,6 +49,21 @@ public abstract class CustomRole
     /// </summary>
     public abstract Enums.Team Team { get; }
 
+    public virtual string TeamText
+    {
+        get
+        {
+            switch (Team)
+            {
+                case Enums.Team.Alone:
+                case Enums.Team.Role: return "Neutral";
+                case Enums.Team.Crewmate: return "Crewmate";
+                case Enums.Team.Impostor: return "Impostor";
+                default: throw new NotImplementedException("Unknown Visibility");
+            }
+        }
+    }
+
     /// <summary>
     /// Whether the player should get tasks
     /// </summary>

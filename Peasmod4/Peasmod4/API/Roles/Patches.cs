@@ -99,20 +99,7 @@ public class Patches
         {
             __instance.BackgroundBar.material.SetColor("_Color", role.Color);
             __instance.TeamTitle.color = role.Color;
-            switch (role.Team)
-            {
-                case Enums.Team.Alone:
-                case Enums.Team.Role:
-                    __instance.TeamTitle.text = "Neutral";
-                    break;
-                case Enums.Team.Crewmate:
-                    __instance.TeamTitle.text = "Crewmate";
-                    break;
-                case Enums.Team.Impostor:
-                    __instance.TeamTitle.text = "Impostor";
-                    break;
-            }
-            
+            __instance.TeamTitle.text = role.TeamText;
         }
     }
 
