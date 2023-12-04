@@ -7,19 +7,6 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-      - uses: actions/checkout@v3
-        with:
-          submodules: true
-
-      - uses: actions/cache@v3
-        with:
-          path: |
-            ~/.nuget/packages
-            ~/.cache/bepinex
-          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-nuget-
-
       - name: Setup .NET
         uses: actions/setup-dotnet@v2
         with:
@@ -33,4 +20,4 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: Peasmod4.dll
-          path: Peasmod4/bin/Debug/net6.0/Peasmod4.dll
+          path: Peasmod4/Peasmod4/Peasmod4/bin/Debug/net6.0/Peasmod4.dll
