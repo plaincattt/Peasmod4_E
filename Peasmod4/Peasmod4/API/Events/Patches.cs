@@ -22,6 +22,14 @@ public class Patches
         PeasmodPlugin.Logger.LogInfo("test");
         //GameEventManager.GameStartEventHandler?.Invoke(null, EventArgs.Empty);
     }
+    
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnGameEnd))]
+    public static void GameEndPatch([HarmonyArgument(0)] EndGameResult result)
+    {
+        PeasmodPlugin.Logger.LogInfo("GameEnd");
+        GameEventManager.GameEndEventHandler?.Invoke(null, new GameEventManager.GameEndEventArgs(result));
+    }
 
     [HarmonyPostfix]
     [HarmonyPatch(typeof(ExileController), nameof(ExileController.Begin))]

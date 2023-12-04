@@ -54,6 +54,7 @@ public class CustomButton
         Button.buttonLabelText.text = Text;
         Button.graphic.sprite = Image;
         Cooldown = Options.MaxCooldown;
+        Button?.SetCoolDown(10f, Cooldown);
         
         var buttonComponent = Button.GetComponent<PassiveButton>();
         buttonComponent.OnClick.RemoveAllListeners();

@@ -84,4 +84,32 @@ public class Patches
             reasonText.transform.localPosition =
                 __instance.__4__this.WinText.transform.localPosition - new Vector3(0f, 0.8f);
     }
+
+    [HarmonyPrefix]
+    [HarmonyPatch(typeof(GameManager), nameof(GameManager.DidHumansWin))]
+    public static bool DidHumansWinPatch([HarmonyArgument(0)] GameOverReason gameOverReason, ref bool __result)
+    {
+        var customReason = CustomEndGameManager.GetCustomEndReason(gameOverReason);
+        if (customReason != null)
+        {
+            __result = customReason.CrewWon;
+            return false;
+        }
+
+        return true;
+    }
+    
+    [HarmonyPrefix]
+    [HarmonyPatch(typeof(GameManager), nameof(GameManager.DidImpostorsWin))]
+    public static bool DidImpostorsWinPatch([HarmonyArgument(0)] GameOverReason gameOverReason, ref bool __result)
+    {
+        var customReason = CustomEndGameManager.GetCustomEndReason(gameOverReason);
+        if (customReason != null)
+        {
+            __result = customReason.ImpostorWon;
+            return false;
+        }
+
+        return true;
+    }
 }
