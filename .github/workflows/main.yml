@@ -1,18 +1,27 @@
 name: CI
 
-on: [ "push", "pull_request" ]
+on: ["push", "pull_request"]
 
 jobs:
   build:
     runs-on: ubuntu-20.04
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: true
 
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.nuget/packages
+            ~/.cache/bepinex
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
       - name: Setup .NET
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v2
         with:
           dotnet-version: 6.x
 
@@ -21,7 +30,7 @@ jobs:
         with:
           verbosity: Diagnostic
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: Peasmod4.dll
-          path: Peasmod4/bin/Release/net6.0/Peasmod4.dll
+          path: Peasmod4/bin/Debug/net6.0/Peasmod4.dll
