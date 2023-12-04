@@ -21,7 +21,8 @@ public class Jester : CustomRole
         GameEventManager.GameStartEventHandler += OnGameStart;
         PlayerEventManager.PlayerExiledEventHandler += OnPlayerExiled;
 
-        RoleOption = new CustomRoleOption(this, true);
+        CanVentOption = new CustomToggleOption("JesterCanVent", "Can Vent", false);
+        RoleOption = new CustomRoleOption(this, true, CanVentOption);
     }
 
     public override string Name => "Jester";
@@ -32,8 +33,10 @@ public class Jester : CustomRole
     public override Enums.Visibility Visibility => Enums.Visibility.NoOne;
     public override Enums.Team Team => Enums.Team.Alone;
     public override bool HasToDoTasks => false;
+    public override bool CanVent => CanVentOption.Value;
 
     public CustomRoleOption RoleOption;
+    public CustomToggleOption CanVentOption;
 
     public static Dictionary<byte, CustomEndGameManager.CustomEndReason> EndReasons =
         new Dictionary<byte, CustomEndGameManager.CustomEndReason>();
