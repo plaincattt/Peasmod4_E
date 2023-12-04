@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using AmongUs.GameOptions;
 using Reactor.Localization.Utilities;
 using Reactor.Utilities.Extensions;
@@ -7,36 +8,37 @@ using UnityEngine;
 
 namespace Peasmod4.API.Roles;
 
-public class RoleManager
+public class CustomRoleManager
 {
-    public static List<BaseRole> Roles = new List<BaseRole>();
-
+    public static List<CustomRole> Roles = new ();
+    
     internal static int GetId() => Roles.Count;
 
-    internal static RoleBehaviour ToRoleBehaviour(BaseRole baseRole)
+    internal static RoleBehaviour ToRoleBehaviour(CustomRole customRole)
     {
-        if (GameObject.Find($"{baseRole.Name}-Role"))
+        if (GameObject.Find($"{customRole.Name}-Role"))
         {
-            return GameObject.Find($"{baseRole.Name}-Role").GetComponent<RoleBehaviour>();
+            return GameObject.Find($"{customRole.Name}-Role").GetComponent<ModRole>();
         }
 
-        var roleObject = new GameObject($"{baseRole.Name}-Role");
+        var roleObject = new GameObject($"{customRole.Name}-Role");
         roleObject.DontDestroy();
 
-        var role = roleObject.AddComponent<CrewmateRole>();
-        role.StringName = CustomStringName.CreateAndRegister(baseRole.Name);
-        role.BlurbName = CustomStringName.CreateAndRegister(baseRole.Description);
-        role.BlurbNameLong = CustomStringName.CreateAndRegister(baseRole.LongDescription);
-        role.BlurbNameMed = CustomStringName.CreateAndRegister(baseRole.Name);
-        role.Role = (RoleTypes) (8 + baseRole.Id);
-        role.NameColor = baseRole.Color;
+        var role = roleObject.AddComponent<ModRole>();
+        role.StringName = CustomStringName.CreateAndRegister(customRole.Name);
+        role.BlurbName = CustomStringName.CreateAndRegister(customRole.Description);
+        role.BlurbNameLong = CustomStringName.CreateAndRegister(customRole.LongDescription);
+        role.BlurbNameMed = CustomStringName.CreateAndRegister(customRole.Name);
+        role.Role = (RoleTypes) (8 + customRole.Id);
+        role.NameColor = customRole.Color;
             
-        //var abilityButtonSettings = ScriptableObject.CreateInstance<AbilityButtonSettings>();
-        //abilityButtonSettings.Image = Utility.CreateSprite("Peasmod4.Placeholder.png");
-        //abilityButtonSettings.Text = CustomStringName.CreateAndRegister("baseRole.Name");
-        //role.Ability = abilityButtonSettings;
+        var abilityButtonSettings = ScriptableObject.CreateInstance<AbilityButtonSettings>();
+        abilityButtonSettings.Image = customRole.Icon;
+        abilityButtonSettings.Text = CustomStringName.CreateAndRegister("Please work");
+        abilityButtonSettings.FontMaterial = Material.GetDefaultMaterial();
+        role.Ability = abilityButtonSettings;
 
-        role.TeamType = baseRole.Team switch
+        role.TeamType = customRole.Team switch
         {
             Enums.Team.Alone => (RoleTeamTypes) 3,
             Enums.Team.Role => (RoleTeamTypes) 2,
@@ -44,12 +46,12 @@ public class RoleManager
             Enums.Team.Impostor => RoleTeamTypes.Impostor,
             _ => RoleTeamTypes.Crewmate
         };
-        role.MaxCount = baseRole.MaxCount;
-        role.TasksCountTowardProgress = baseRole.HasToDoTasks;
-        role.CanVent = baseRole.CanVent;
-        role.CanUseKillButton = baseRole.CanKill();
+        role.MaxCount = customRole.MaxCount;
+        role.TasksCountTowardProgress = customRole.HasToDoTasks;
+        role.CanVent = customRole.CanVent;
+        role.CanUseKillButton = customRole.CanKill();
         
-        PeasmodPlugin.Logger.LogInfo($"Created RoleBehaviour for Role {baseRole.Name}");
+        PeasmodPlugin.Logger.LogInfo($"Created RoleBehaviour for Role {customRole.Name}");
             
         return role;
     }
@@ -60,13 +62,23 @@ public class RoleManager
         if (InjectedRoleBehaviours)
             return;
         
-        var list = global::RoleManager.Instance.AllRoles.ToList();
-        foreach (var baseRole in Roles)
+        var list = RoleManager.Instance.AllRoles.ToList();
+        foreach (var role in Roles)
         {
-            list.Add(baseRole.RoleBehaviour);
+            list.Add(role.RoleBehaviour);
         }
-        global::RoleManager.Instance.AllRoles = list.ToArray();
+        RoleManager.Instance.AllRoles = list.ToArray();
 
         InjectedRoleBehaviours = true;
+    }
+
+    public static T GetRole<T>() where T : CustomRole
+    {
+        return (T) Roles.First(role => role.GetType() == typeof(T));
+    }
+
+    public static List<PlayerControl> GetRoleMembers(CustomRole role)
+    {
+        return PlayerControl.AllPlayerControls.ToArray().ToList().FindAll(player => player.IsCustomRole(role));
     }
 }

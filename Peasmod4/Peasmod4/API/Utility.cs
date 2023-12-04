@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.IO;
 using System.Reflection;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
+using Reactor.Utilities;
 using Reactor.Utilities.Extensions;
 using UnityEngine;
 
@@ -39,5 +41,16 @@ public class Utility
             pixelsPerUnit);
         sprite.DontDestroy();
         return sprite;
+    }
+
+    public static void DoAfterTimeout(Action action, float timeout)
+    {
+        Coroutines.Start(_CoDoAfterTimeout(action, timeout));
+    }
+
+    private static IEnumerator _CoDoAfterTimeout(Action action, float timeout)
+    {
+        yield return new WaitForSeconds(timeout);
+        action.Invoke();
     }
 }

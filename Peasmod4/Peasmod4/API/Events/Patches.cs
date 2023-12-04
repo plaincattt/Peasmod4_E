@@ -1,6 +1,38 @@
-﻿namespace Peasmod4.API.Events;
+﻿using System;
+using HarmonyLib;
 
+namespace Peasmod4.API.Events;
+
+[HarmonyPatch]
 public class Patches
 {
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(HudManager), nameof(HudManager.Update))]
+    public static void HudManagerUpdatePatch(HudManager __instance)
+    {
+        HudEventManager.HudUpdateEventHandler?.Invoke(null, new HudEventManager.HudUpdateEventArgs(__instance));
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.Start))]
+    public static void GameStartPatch()
+    {
+        PeasmodPlugin.Logger.LogInfo("test");
+        GameEventManager.GameStartEventHandler?.Invoke(null, EventArgs.Empty);
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(ExileController), nameof(ExileController.Begin))]
+    public static void MeetingEndPatch(ExileController __instance, [HarmonyArgument(0)] GameData.PlayerInfo exiled,
+        [HarmonyArgument(1)] bool tie)
+    {
+        MeetingEventManager.MeetingEndEventHandler?.Invoke(null, new MeetingEventManager.MeetingEndEventArgs(exiled, tie));
+    }
     
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Exiled))]
+    public static void PlayerExiledPatch(PlayerControl __instance)
+    {
+        PlayerEventManager.PlayerExiledEventHandler?.Invoke(null, new PlayerEventManager.PlayerExiledEventArgs(__instance));
+    }
 }

@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using BepInEx.Unity.IL2CPP;
+using Peasmod4.API.Events;
 using UnityEngine;
 
 namespace Peasmod4.API.Roles;
 
 public abstract class CustomRole
 {
+    public Assembly Assembly { get; }
+    
     public int Id { get; }
 
     public RoleBehaviour RoleBehaviour;
@@ -45,20 +49,6 @@ public abstract class CustomRole
     /// </summary>
     public abstract Enums.Team Team { get; }
 
-    public virtual Enums.SourceType SourceType
-    {
-        get
-        {
-            switch (Team)
-            {
-                case Enums.Team.Impostor:
-                    return Enums.SourceType.Impostor;
-                default:
-                    return Enums.SourceType.Crewmate;
-            } 
-        }
-    }
-
     /// <summary>
     /// Whether the player should get tasks
     /// </summary>
@@ -66,14 +56,14 @@ public abstract class CustomRole
         
     public abstract bool HasToDoTasks { get; }
 
+    public int Count;
+    
+    public int Chance;
+    
     /// <summary>
-    /// How many player should get the Role
+    /// How many players can possibly get the Role
     /// </summary>
-    public virtual int Count { get; set; } = 0;
-        
     public virtual int MaxCount { get; set; } = 15;
-        
-    public virtual int Chance { get; set; } = 100;
 
     public virtual float KillDistance { get; set; } =
         Mathf.Clamp(GameManager.Instance?.LogicOptions?.GetKillDistance() ?? 1.8f, 0, 2);
@@ -114,10 +104,32 @@ public abstract class CustomRole
     {
         return false;
     }
-    
-    public CustomRole(BasePlugin plugin)
+
+    public virtual bool DidWin(GameOverReason gameOverReason, PlayerControl player, ref bool overrides)
     {
+        switch (Team)
+        {
+            case Enums.Team.Crewmate:
+                return GameManager.Instance.DidHumansWin(gameOverReason) && player.Data.Role.TeamType == RoleTeamTypes.Crewmate;
+            case Enums.Team.Impostor:
+                return GameManager.Instance.DidImpostorsWin(gameOverReason) && player.Data.Role.TeamType == RoleTeamTypes.Impostor;
+            default:
+                return false;
+        }
+    }
+
+    private void _ShowButtons(object sender, HudEventManager.HudSetActiveEventArgs args)
+    {
+        
+    }
+    
+    public CustomRole(Assembly assembly)
+    {
+        HudEventManager.HudSetActiveEventHandler += _ShowButtons;
+        
+        Assembly = assembly;
         Id = CustomRoleManager.GetId();
+        PeasmodPlugin.Logger.LogInfo(Id);
         RoleBehaviour = CustomRoleManager.ToRoleBehaviour(this);
         CustomRoleManager.Roles.Add(this);
     }
