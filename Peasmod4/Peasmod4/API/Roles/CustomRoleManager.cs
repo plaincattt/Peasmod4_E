@@ -79,6 +79,6 @@ public class CustomRoleManager
 
     public static List<PlayerControl> GetRoleMembers(CustomRole role)
     {
-        return PlayerControl.AllPlayerControls.ToArray().ToList().FindAll(player => player.IsCustomRole(role));
+        return PlayerControl.AllPlayerControls.WrapToSystem().FindAll(player => player.IsCustomRole(role));
     }
 }

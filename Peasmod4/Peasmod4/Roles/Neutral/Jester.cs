@@ -22,8 +22,6 @@ public class Jester : CustomRole
         PlayerEventManager.PlayerExiledEventHandler += OnPlayerExiled;
 
         RoleOption = new CustomRoleOption(this, true);
-
-        CustomEndReason = CustomEndGameManager.RegisterCustomEndReason();
     }
 
     public override string Name => "Jester";
@@ -37,11 +35,27 @@ public class Jester : CustomRole
 
     public CustomRoleOption RoleOption;
 
-    public static GameOverReason CustomEndReason;
-
+    public static Dictionary<byte, CustomEndGameManager.CustomEndReason> EndReasons =
+        new Dictionary<byte, CustomEndGameManager.CustomEndReason>();
+    
+    public override bool DidWin(GameOverReason gameOverReason, PlayerControl player, ref bool overrides)
+    {
+        return EndReasons.ContainsKey(player.PlayerId) && EndReasons[player.PlayerId].EndReason == gameOverReason;
+    }
+    
     public void OnGameStart(object sender, EventArgs args)
     {
         PeasmodPlugin.Logger.LogInfo("test2Jester");
+        EndReasons.Clear();
+        foreach (var player in PlayerControl.AllPlayerControls)
+        {
+            if (player.IsCustomRole(this))
+            {
+                PeasmodPlugin.Logger.LogInfo("Registered Reason: " + player.name);
+                EndReasons.Add(player.PlayerId,
+                    CustomEndGameManager.RegisterCustomEndReason("Jester won", Color, false, false));
+            }
+        }
     }
     
     public void OnPlayerExiled(object sender, PlayerEventManager.PlayerExiledEventArgs args)
@@ -49,10 +63,7 @@ public class Jester : CustomRole
         PeasmodPlugin.Logger.LogInfo("test3Jester");
         if (args.ExiledPlayer.IsCustomRole(this) && args.ExiledPlayer.IsLocal())
         {
-            Rpc<RpcEndGame>.Instance.Send(new RpcEndGame.Data(CustomEndReason, new List<PlayerControl>()
-                {
-                    PlayerControl.LocalPlayer
-                }, "Jester wins", Color));
+            EndReasons[args.ExiledPlayer.PlayerId].Trigger();
         }
     }
 }

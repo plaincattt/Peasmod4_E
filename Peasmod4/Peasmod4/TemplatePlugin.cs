@@ -42,7 +42,7 @@ public partial class PeasmodPlugin : BasePlugin
             text.text = "Not again\nPeasmod V4";
         };
 
-        GameEventManager.GameStartEventHandler += (_, _) => CustomEndGameManager.Reset();
+        GameEventManager.GameEndEventHandler += (_, _) => CustomEndGameManager.EndReasons.Clear();
         
         Harmony.PatchAll();
     }

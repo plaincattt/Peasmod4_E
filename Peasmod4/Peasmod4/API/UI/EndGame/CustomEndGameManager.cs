@@ -1,23 +1,50 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Peasmod4.API.Networking;
+using Reactor.Networking.Rpc;
 using UnityEngine;
 
 namespace Peasmod4.API.UI.EndGame;
 
 public class CustomEndGameManager
 {
-    public static List<PlayerControl> WinningPlayers;
-    public static string Reason;
-    public static Color? Color;
-    public static bool IsCustom;
+    public static int EndReasonsId;
+    public static List<CustomEndReason> EndReasons = new List<CustomEndReason>();
 
-    public static void Reset()
+    public static CustomEndReason GetCustomEndReason(GameOverReason gameOverReason) =>
+        EndReasons.Find(endReason => endReason.EndReason == gameOverReason);
+    
+    public static bool IsCustomEndReason(GameOverReason gameOverReason) => GetCustomEndReason(gameOverReason) != null;
+
+    public static CustomEndReason RegisterCustomEndReason(string reasonText, Color? color, bool crewWon,
+        bool impostorWon)
     {
-        WinningPlayers = new List<PlayerControl>();
-        Reason = null;
-        Color = null;
-        IsCustom = false;
+        var reason =
+            new CustomEndReason((GameOverReason)10 + EndReasonsId++, reasonText, color, crewWon, impostorWon);
+        EndReasons.Add(reason);
+        return reason;
     }
 
-    public static int CustomEndReason;
-    public static GameOverReason RegisterCustomEndReason() => (GameOverReason)10 + CustomEndReason++;
+    public class CustomEndReason
+    {
+        public GameOverReason EndReason;
+        public string ReasonText;
+        public Color? Color;
+        public bool CrewWon;
+        public bool ImpostorWon;
+
+        public CustomEndReason(GameOverReason endReason, string reasonText, Color? color, bool crewWon, bool impostorWon)
+        {
+            EndReason = endReason;
+            ReasonText = reasonText;
+            Color = color;
+            CrewWon = crewWon;
+            ImpostorWon = impostorWon;
+        }
+
+        public void Trigger()
+        {
+            Rpc<RpcEndGame>.Instance.Send(new RpcEndGame.Data(EndReason));
+        }
+    }
 }

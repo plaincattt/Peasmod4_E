@@ -38,19 +38,16 @@ public class TestRole : CustomRole
     public CustomNumberOption TestOption5 = new CustomNumberOption("TestOption5", "Test3215", 2f, NumberSuffixes.None, 1, new FloatRange(0, 7), true);
     public CustomStringOption TestOption6 = new CustomStringOption("TestOption6", "test", "hallo", "mitte", "tschüs!");
     public CustomRoleOption CustomRoleOption1;
-    public GameOverReason CustomEndReason;
+    public CustomEndGameManager.CustomEndReason CustomEndReason;
     
     public void Start(object sender, EventArgs args)
     {
         PeasmodPlugin.Logger.LogInfo("test2");
-        CustomEndReason = CustomEndGameManager.RegisterCustomEndReason();
+        CustomEndReason = CustomEndGameManager.RegisterCustomEndReason("Peasplayer wins (obviously)", Color, false, false);
         Button = new CustomButton(() =>
             {
                 PeasmodPlugin.Logger.LogInfo("test");
-                Rpc<RpcEndGame>.Instance.Send(new RpcEndGame.Data(CustomEndReason, new System.Collections.Generic.List<PlayerControl>()
-                {
-                    PlayerControl.LocalPlayer
-                }, "Peasplayer wins (obviously)", Color));
+                CustomEndReason.Trigger();
                 /*var player = PlayerControl.LocalPlayer;
                 GameData.PlayerInfo data = player.Data;
                 //GameManager.Instance.RpcEndGame(GameOverReason.HumansDisconnect, false);
@@ -124,7 +121,7 @@ public class TestRole : CustomRole
 
     public override bool DidWin(GameOverReason gameOverReason, PlayerControl player, ref bool overrides)
     {
-        return true;
+        return GameManager.Instance.DidHumansWin(gameOverReason) || CustomEndReason.EndReason == gameOverReason;
     }
 
     public override bool CanKill(PlayerControl victim = null)

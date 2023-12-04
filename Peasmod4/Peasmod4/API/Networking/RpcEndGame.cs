@@ -19,16 +19,10 @@ public class RpcEndGame : PlayerCustomRpc<PeasmodPlugin, RpcEndGame.Data>
     public readonly struct Data
     {
         public readonly GameOverReason EndReason;
-        public readonly List<PlayerControl> WinningPlayers;
-        public readonly string Reason;
-        public readonly Color? Color;
 
-        public Data(GameOverReason endReason, List<PlayerControl> winningPlayers, string reason, Color? color)
+        public Data(GameOverReason endReason)
         {
             EndReason = endReason;
-            WinningPlayers = winningPlayers;
-            Reason = reason;
-            Color = color;
         }
     }
 
@@ -37,7 +31,7 @@ public class RpcEndGame : PlayerCustomRpc<PeasmodPlugin, RpcEndGame.Data>
     public override void Write(MessageWriter writer, Data data)
     {
         writer.Write((byte) data.EndReason);
-        writer.Write(data.WinningPlayers.Count);
+        /*writer.Write(data.WinningPlayers.Count);
         foreach (var winningPlayer in data.WinningPlayers)
         {
             writer.Write(winningPlayer.PlayerId);
@@ -52,14 +46,14 @@ public class RpcEndGame : PlayerCustomRpc<PeasmodPlugin, RpcEndGame.Data>
             writer.Write(data.Color.Value.g);
             writer.Write(data.Color.Value.b);
             writer.Write(data.Color.Value.a);
-        }
+        }*/
     }
 
     public override Data Read(MessageReader reader)
     {
         PeasmodPlugin.Logger.LogInfo("Received RpcEndGame");
         var endReason = (GameOverReason)reader.ReadByte();
-        var list = new List<PlayerControl>();
+        /*var list = new List<PlayerControl>();
         var count = reader.ReadInt32();
         for (int i = 0; i < count; i++)
         {
@@ -75,17 +69,12 @@ public class RpcEndGame : PlayerCustomRpc<PeasmodPlugin, RpcEndGame.Data>
         if (hasColor)
         {
             color = new Color(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
-        }
-        return new Data(endReason, list, reason, color);
+        }*/
+        return new Data(endReason);
     }
 
     public override void Handle(PlayerControl innerNetObject, Data data)
     {
-        CustomEndGameManager.WinningPlayers = data.WinningPlayers;
-        CustomEndGameManager.Reason = data.Reason;
-        CustomEndGameManager.Color = data.Color;
-        CustomEndGameManager.IsCustom = true;
-        
         if (AmongUsClient.Instance.AmHost)
         {
             Utility.DoAfterTimeout(() => GameManager.Instance.RpcEndGame(data.EndReason, false), 1f);

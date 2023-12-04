@@ -11,12 +11,12 @@ public class Patches
     [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnGameEnd))]
     public static void ReplaceWinnersPatch(AmongUsClient __instance, [HarmonyArgument(0)] EndGameResult endGameResult)
     {
-        if (CustomEndGameManager.IsCustom)
+        /*if (CustomEndGameManager.IsCustom)
         {
             TempData.winners.Clear();
             CustomEndGameManager.WinningPlayers.ForEach(player =>
                 TempData.winners.Add(new WinningPlayerData(player.Data)));
-        }
+        }*/
 
         var overridingRole = CustomRoleManager.Roles.Find(role =>
         {
@@ -59,21 +59,20 @@ public class Patches
     [HarmonyPatch(typeof(EndGameManager), nameof(EndGameManager.SetEverythingUp))]
     public static void ChangeColorPatch(EndGameManager __instance)
     {
-        if (CustomEndGameManager.IsCustom)
+        var endReason = CustomEndGameManager.GetCustomEndReason(TempData.EndReason);
+        if (endReason != null)
         {
             var reasonText = GameObject.Instantiate(__instance.WinText, __instance.WinText.transform.parent);
             reasonText.name = "CustomReasonText";
             reasonText.transform.localPosition = new Vector3(0f, 2.7f, -14f);
-            reasonText.text = "<size=50%>" + CustomEndGameManager.Reason + "</size>";
+            reasonText.text = "<size=50%>" + endReason.ReasonText + "</size>";
             
-            if (CustomEndGameManager.Color.HasValue)
+            if (endReason.Color.HasValue)
             {
-                __instance.BackgroundBar.material.SetColor("_Color", CustomEndGameManager.Color.Value);
-                reasonText.color = CustomEndGameManager.Color.Value;
+                __instance.BackgroundBar.material.SetColor("_Color", endReason.Color.Value);
+                reasonText.color = endReason.Color.Value;
             }
         }
-
-        CustomEndGameManager.Reset();
     }
 
     [HarmonyPostfix]

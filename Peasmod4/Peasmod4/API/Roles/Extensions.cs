@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using AmongUs.GameOptions;
 using Peasmod4.API.Networking;
 using Reactor.Networking.Rpc;
@@ -94,4 +95,7 @@ public static class Extensions
         };
         Patches.HideButtons(HudManager.Instance, true);
     }
+
+    public static List<PlayerControl> GetMembers(this CustomRole customRole) =>
+        CustomRoleManager.GetRoleMembers(customRole);
 }

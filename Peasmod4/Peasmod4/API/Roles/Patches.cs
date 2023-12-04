@@ -75,6 +75,7 @@ public class Patches
         }
             
         HideButtons(HudManager.Instance, true);
+        Rpc<RpcTriggerEvent>.Instance.Send(new RpcTriggerEvent.Data("Start"));
     }
     
     /*[HarmonyPostfix]

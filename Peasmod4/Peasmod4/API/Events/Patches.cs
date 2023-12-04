@@ -1,5 +1,7 @@
 ﻿using System;
 using HarmonyLib;
+using Peasmod4.API.Networking;
+using Reactor.Networking.Rpc;
 
 namespace Peasmod4.API.Events;
 
@@ -18,7 +20,7 @@ public class Patches
     public static void GameStartPatch()
     {
         PeasmodPlugin.Logger.LogInfo("test");
-        GameEventManager.GameStartEventHandler?.Invoke(null, EventArgs.Empty);
+        //GameEventManager.GameStartEventHandler?.Invoke(null, EventArgs.Empty);
     }
 
     [HarmonyPostfix]
