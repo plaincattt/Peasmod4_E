@@ -93,7 +93,9 @@ public static class Extensions
         {
             PlayerNameColor.Set(playerControl);
         };
-        Patches.HideButtons(HudManager.Instance, true);
+        
+        if (player.IsLocal())
+            Patches.ToggleButtons(HudManager.Instance, true);
     }
 
     public static List<PlayerControl> GetMembers(this CustomRole customRole) =>

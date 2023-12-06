@@ -74,7 +74,7 @@ public class Patches
             }
         }
             
-        HideButtons(HudManager.Instance, true);
+        //HideButtons(HudManager.Instance, true);
         Rpc<RpcTriggerEvent>.Instance.Send(new RpcTriggerEvent.Data("Start"));
     }
     
@@ -263,14 +263,14 @@ public class Patches
     [HarmonyPostfix]
     [HarmonyPatch(typeof(HudManager), nameof(HudManager.SetHudActive), typeof(bool))]
     public static void HideButtonsPatch(HudManager __instance, [HarmonyArgument(0)] bool isActive) =>
-        HideButtons(__instance, isActive);
+        ToggleButtons(__instance, isActive);
     
-    [HarmonyPostfix]
+    /*[HarmonyPostfix]
     [HarmonyPatch(typeof(HudManager), nameof(HudManager.SetHudActive), typeof(PlayerControl), typeof(RoleBehaviour), typeof(bool))]
     public static void HideButtonsPatch2(HudManager __instance, [HarmonyArgument(2)] bool isActive) =>
-        HideButtons(__instance, isActive);
+        HideButtons(__instance, isActive);*/
 
-    public static void HideButtons(HudManager hud, bool isActive)
+    public static void ToggleButtons(HudManager hud, bool isActive)
     {
         PeasmodPlugin.Logger.LogInfo("HideButtons");
         var customRole = PlayerControl.LocalPlayer.GetCustomRole();
