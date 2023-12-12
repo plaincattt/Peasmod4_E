@@ -3,11 +3,13 @@ using System.Linq;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
 using HarmonyLib;
 using Il2CppSystem.Collections.Generic;
+using Peasmod4.API.Components;
 using Peasmod4.API.Events;
 using Peasmod4.API.Networking;
 using Reactor.Networking.Rpc;
 using Reactor.Utilities.Extensions;
 using UnityEngine;
+using EventType = Peasmod4.API.Events.EventType;
 using Random = System.Random;
 
 namespace Peasmod4.API.Roles;
@@ -197,9 +199,8 @@ public class Patches
         }
     }*/
 
-    [HarmonyPostfix]
-    [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.Start))]
-    public static void SetButtonLabelMaterial(ShipStatus __instance)
+    [RegisterEventListener(EventType.GameStart)]
+    public static void SetButtonLabelMaterial(object sender, EventArgs args)
     {
         if (PlayerControl.LocalPlayer.IsCustomRole())
         {
@@ -260,25 +261,26 @@ public class Patches
         return true;
     }*/
 
-    [HarmonyPostfix]
+    /*[HarmonyPostfix]
     [HarmonyPatch(typeof(HudManager), nameof(HudManager.SetHudActive), typeof(bool))]
     public static void HideButtonsPatch(HudManager __instance, [HarmonyArgument(0)] bool isActive) =>
-        ToggleButtons(__instance, isActive);
+        ToggleButtons(__instance, isActive);*/
     
     /*[HarmonyPostfix]
     [HarmonyPatch(typeof(HudManager), nameof(HudManager.SetHudActive), typeof(PlayerControl), typeof(RoleBehaviour), typeof(bool))]
     public static void HideButtonsPatch2(HudManager __instance, [HarmonyArgument(2)] bool isActive) =>
         HideButtons(__instance, isActive);*/
 
-    public static void ToggleButtons(HudManager hud, bool isActive)
+    [RegisterEventListener(EventType.HudSetActive)]
+    public static void ToggleButtons(object sender, HudEventManager.HudSetActiveEventArgs args)
     {
         PeasmodPlugin.Logger.LogInfo("HideButtons");
         var customRole = PlayerControl.LocalPlayer.GetCustomRole();
         if (customRole != null)
         {
-            hud.AbilityButton.gameObject.SetActive(false);
-            hud.ImpostorVentButton.gameObject.SetActive(customRole.CanVent && isActive);
-            hud.KillButton.gameObject.SetActive(customRole.CanKill() && isActive);
+            args.Hud.AbilityButton.gameObject.SetActive(false);
+            args.Hud.ImpostorVentButton.gameObject.SetActive(customRole.CanVent && args.Active);
+            args.Hud.KillButton.gameObject.SetActive(customRole.CanKill() && args.Active);
         }
     }
 

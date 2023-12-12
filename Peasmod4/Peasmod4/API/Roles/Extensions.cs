@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using AmongUs.GameOptions;
+using Peasmod4.API.Events;
 using Peasmod4.API.Networking;
 using Reactor.Networking.Rpc;
 
@@ -95,7 +95,7 @@ public static class Extensions
         };
         
         if (player.IsLocal())
-            Patches.ToggleButtons(HudManager.Instance, true);
+            Patches.ToggleButtons(null, new HudEventManager.HudSetActiveEventArgs(HudManager.Instance, true));
     }
 
     public static List<PlayerControl> GetMembers(this CustomRole customRole) =>

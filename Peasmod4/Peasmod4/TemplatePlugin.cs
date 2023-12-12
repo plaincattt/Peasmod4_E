@@ -1,4 +1,5 @@
-﻿using AmongUs.GameOptions;
+﻿using System;
+using AmongUs.GameOptions;
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
@@ -33,6 +34,13 @@ public partial class PeasmodPlugin : BasePlugin
         ConfigFile = Config;
         
         RegisterCustomRoleAttribute.Load();
+        RegisterEventListenerAttribute.Load();
+    }
+
+    [RegisterEventListener(EventType.GameStart)]
+    public static void TestListener(object sender, EventArgs test)
+    {
+        PeasmodPlugin.Logger.LogInfo("HALLO WELLLLLT");
     }
     
     public override void Load()
