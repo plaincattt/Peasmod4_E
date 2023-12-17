@@ -34,6 +34,7 @@
     <ItemGroup>
         <EmbeddedResource Include="Placeholder.png" />
         <EmbeddedResource Include="Resources/Buttons/CallMeeting.png" />
+        <EmbeddedResource Include="Resources/Buttons/TurnInvisible.png" />
     </ItemGroup>
 
     <Target Name="Copy" AfterTargets="Build" Condition="'$(AmongUs)' != ''">

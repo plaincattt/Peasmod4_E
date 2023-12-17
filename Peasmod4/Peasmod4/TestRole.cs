@@ -1,19 +1,12 @@
 ﻿using System;
-using System.Linq;
 using System.Reflection;
-using AmongUs.GameOptions;
-using BepInEx.Unity.IL2CPP;
-using HarmonyLib;
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
-using Il2CppSystem.Collections.Generic;
-using Peasmod4.API;
 using Peasmod4.API.Components;
 using Peasmod4.API.Events;
-using Peasmod4.API.Networking;
 using Peasmod4.API.Roles;
 using Peasmod4.API.UI.Buttons;
 using Peasmod4.API.UI.EndGame;
 using Peasmod4.API.UI.Options;
+using Peasmod4.Roles.Abilities;
 using Reactor.Networking.Rpc;
 using UnityEngine;
 
@@ -39,6 +32,8 @@ public class TestRole : CustomRole
     public CustomStringOption TestOption6 = new CustomStringOption("TestOption6", "test", "hallo", "mitte", "tschüs!");
     public CustomRoleOption CustomRoleOption1;
     public CustomEndGameManager.CustomEndReason CustomEndReason;
+
+    public bool test = true;
     
     public void Start(object sender, EventArgs args)
     {
@@ -47,7 +42,9 @@ public class TestRole : CustomRole
         Button = new CustomButton("Peasplayer", () =>
             {
                 PeasmodPlugin.Logger.LogInfo("test");
-                CustomEndReason.Trigger();
+                //CustomEndReason.Trigger();
+                Rpc<TurnInvisible.RpcTurnInvisible>.Instance.Send(new TurnInvisible.RpcTurnInvisible.Data(PlayerControl.LocalPlayer, test));
+                test = !test;
                 /*var player = PlayerControl.LocalPlayer;
                 GameData.PlayerInfo data = player.Data;
                 //GameManager.Instance.RpcEndGame(GameOverReason.HumansDisconnect, false);
@@ -66,7 +63,7 @@ public class TestRole : CustomRole
                     {
                         array = (player.cache[collider2D] = collider2D.GetComponents<IUsable>().ToArray());
                     }
-                    
+
                     PeasmodPlugin.Logger.LogInfo("test1: " + collider2D.gameObject.name);
                     if (array != null && (flag2 || player.inVent))
                     {
@@ -110,8 +107,12 @@ public class TestRole : CustomRole
                 }
                 PeasmodPlugin.Logger.LogInfo("test8: " + (usable == null));
                 //Rpc<RpcEndGame>.Instance.Send(new RpcEndGame.Data((GameOverReason) 15));*/
-            }, "Hallo", Utility.CreateSprite("Peasmod4.Placeholder.png"), 
-            player => player.IsCustomRole(this), player => player.IsCustomRole(this), new CustomButton.CustomButtonOptions(maxCooldown: 1f));
+            }, "Hallo", Utility.CreateSprite("Peasmod4.Placeholder.png", 128f), 
+            player => player.IsCustomRole(this), player => player.IsCustomRole(this), new CustomButton.CustomButtonOptions(maxCooldown: 0f, true, 3f,
+                () =>
+                {
+                    PeasmodPlugin.Logger.LogInfo("test123333");
+                }));
     }
 
     public void OnHudUpdate(object sender, HudEventManager.HudUpdateEventArgs args)

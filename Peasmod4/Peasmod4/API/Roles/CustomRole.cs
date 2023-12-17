@@ -88,7 +88,7 @@ public abstract class CustomRole
     /// </summary>
     public virtual bool CanKill(PlayerControl victim = null)
     {
-        return false;
+        return Team == Enums.Team.Impostor;
     }
 
     /// <summary>
