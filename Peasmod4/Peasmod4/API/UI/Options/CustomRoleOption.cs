@@ -163,9 +163,9 @@ public class CustomRoleOption : CustomOption
         RoleOption.RoleMaxCount = Count = maxCount;
         RoleOption.RoleChance = Chance = chance;
 
-        if (_countConfigEntry != null)
+        if (_countConfigEntry != null && AmongUsClient.Instance.AmHost)
             _countConfigEntry.Value = Count;
-        if (_chanceConfigEntry != null)
+        if (_chanceConfigEntry != null && AmongUsClient.Instance.AmHost)
             _chanceConfigEntry.Value = Chance;
 
         if (AdjustRoleSettings)

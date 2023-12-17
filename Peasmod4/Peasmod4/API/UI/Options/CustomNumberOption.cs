@@ -50,7 +50,7 @@ public class CustomNumberOption : CustomOption
         
         OnValueChanged?.Invoke(new CustomNumberOptionValueChangedArgs(this, oldValue, newValue));
 
-        if (_configEntry != null)
+        if (_configEntry != null && AmongUsClient.Instance.AmHost)
             _configEntry.Value = Value;
 
         if (AmongUsClient.Instance.AmHost)

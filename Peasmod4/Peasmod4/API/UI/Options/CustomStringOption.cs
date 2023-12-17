@@ -47,7 +47,7 @@ public class CustomStringOption : CustomOption
         
         OnValueChanged?.Invoke(new CustomStringOptionValueChangedArgs(this, oldValue, newValue));
 
-        if (_configEntry != null)
+        if (_configEntry != null && AmongUsClient.Instance.AmHost)
             _configEntry.Value = Value;
 
         if (AmongUsClient.Instance.AmHost)

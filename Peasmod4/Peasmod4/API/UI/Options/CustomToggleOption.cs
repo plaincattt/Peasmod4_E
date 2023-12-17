@@ -43,7 +43,7 @@ public class CustomToggleOption : CustomOption
         
         OnValueChanged?.Invoke(new CustomToggleOptionValueChangedArgs(this, oldValue, newValue));
 
-        if (_configEntry != null)
+        if (_configEntry != null && AmongUsClient.Instance.AmHost)
             _configEntry.Value = Value;
 
         if (AmongUsClient.Instance.AmHost)
