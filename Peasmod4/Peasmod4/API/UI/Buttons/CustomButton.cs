@@ -1,5 +1,4 @@
 ﻿using System;
-using Peasmod4.API.Components;
 using Peasmod4.API.Events;
 using Reactor.Utilities.Extensions;
 using UnityEngine;
@@ -10,6 +9,7 @@ namespace Peasmod4.API.UI.Buttons;
 public class CustomButton
 {
     public KillButton Button { get; internal set; }
+    public string ObjectName;
     
     public Action OnClick;
     public string Text;
@@ -20,13 +20,20 @@ public class CustomButton
     
     public float Cooldown;
     public PlayerControl Target;
+    public bool Enabled = true;
 
-    public CustomButton(Action onClick, string text, Sprite image, Predicate<PlayerControl> couldUse,
-        Predicate<PlayerControl> canUse) => new CustomButton(onClick, text, image, couldUse, canUse, new CustomButtonOptions());
+    public bool IsEffectActive { get; private set; }
+    public bool IsHudActive { get; private set; }
+
+    private bool _hasBeenCreated;
+
+    public CustomButton(string objectName, Action onClick, string text, Sprite image, Predicate<PlayerControl> couldUse,
+        Predicate<PlayerControl> canUse) => new CustomButton(objectName, onClick, text, image, couldUse, canUse, new CustomButtonOptions());
     
-    public CustomButton(Action onClick, string text, Sprite image, Predicate<PlayerControl> couldUse, Predicate<PlayerControl> canUse, CustomButtonOptions options)
+    public CustomButton(string objectName, Action onClick, string text, Sprite image, Predicate<PlayerControl> couldUse, Predicate<PlayerControl> canUse, CustomButtonOptions options)
     {
         PeasmodPlugin.Logger.LogInfo("CustomButton#Constructor");
+        ObjectName = objectName;
         OnClick = onClick;
         Text = text;
         Image = image;
@@ -38,7 +45,7 @@ public class CustomButton
         
         GameEventManager.GameStartEventHandler += Start;
         HudEventManager.HudUpdateEventHandler += Update;
-        GameEventManager.GameEndEventHandler += Dispose;
+        HudEventManager.HudSetActiveEventHandler += OnHudSetActive;
         
         if (ShipStatus.Instance != null)
             Start(null, EventArgs.Empty);
@@ -46,10 +53,18 @@ public class CustomButton
     
     public void Start(object sender, EventArgs args)
     {
+        if (_hasBeenCreated)
+        {
+            Dispose();
+            return;
+        }
+
+        _hasBeenCreated = true;
+        
         PeasmodPlugin.Logger.LogInfo("CustomButton#Start");
         Button = GameObject.Instantiate(HudManager.Instance.KillButton, HudManager.Instance.KillButton.transform.parent);
-        Button.gameObject.SetActive(true);
-        Button.gameObject.name = Text + "-CustomButton";
+        Button.gameObject.SetActive(CouldBeUsed());
+        Button.gameObject.name = ObjectName + "-CustomButton";
         Button.buttonLabelText.GetComponent<TextTranslatorTMP>().Destroy();
         Button.buttonLabelText.text = Text;
         Button.graphic.sprite = Image;
@@ -62,11 +77,17 @@ public class CustomButton
 
         void listener()
         {
-            if (CanBeUsed() && CouldBeUsed() && Button.gameObject.active &&
+            if (CanBeUsed() && Button.gameObject.active &&
                 PlayerControl.LocalPlayer.moveable)
             {
                 OnClick();
                 Cooldown = Options.MaxCooldown;
+
+                if (Options.HasEffect)
+                {
+                    Cooldown = Options.EffectDuration;
+                    IsEffectActive = true;
+                }
             }
         }
     }
@@ -75,21 +96,36 @@ public class CustomButton
     {
         if (Button == null || Button.gameObject == null)
             return;
-        
-        Button.gameObject.SetActive(CouldBeUsed());
 
-        if (CouldBeUsed())
+        if (CouldBeUsed() && PlayerControl.LocalPlayer.IsKillTimerEnabled)
         {
-            if (Options.MaxCooldown > 0f)
+            if (Cooldown > 0f)
             {
-                if (Cooldown > 0f)
-                    Cooldown -= Time.deltaTime;
+                Cooldown -= Time.deltaTime;
                 Button.SetCoolDown(Cooldown, Options.MaxCooldown);
+            }
+            else
+                Button.graphic.material.SetFloat("_Percent", 1f);
+            
+            Button.cooldownTimerText.color = IsEffectActive ? Color.green : Color.white;
+            if (Cooldown <= 0f && IsEffectActive)
+            {
+                IsEffectActive = false;
+                Options.OnEffectEnded();
+                Cooldown = Options.MaxCooldown;
             }
         }
         
         if (CanBeUsed())
             Button.SetEnabled();
+        else
+            Button.SetDisabled();
+    }
+
+    public void OnHudSetActive(object sender, HudEventManager.HudSetActiveEventArgs args)
+    {
+        IsHudActive = args.Active;
+        Button?.gameObject.SetActive(CouldBeUsed() && IsHudActive);
     }
 
     public bool CouldBeUsed()
@@ -103,7 +139,7 @@ public class CustomButton
         if (MeetingHud.Instance != null) 
             return false;
 
-        if (MapBehaviour.Instance != null && MapBehaviour.Instance.IsOpen)
+        if (!Enabled)
             return false;
 
         return CouldUse.Invoke(PlayerControl.LocalPlayer);
@@ -111,13 +147,16 @@ public class CustomButton
 
     public bool CanBeUsed()
     {
+        if (!CouldBeUsed())
+            return false;
+        
         if (PlayerControl.LocalPlayer == null) 
             return false;
             
         if (PlayerControl.LocalPlayer.Data == null) 
             return false;
             
-        if (MeetingHud.Instance != null) 
+        if (!PlayerControl.LocalPlayer.CanMove || PlayerControl.LocalPlayer.inVent) 
             return false;
 
         if (Options._TargetType != CustomButtonOptions.TargetType.None && Target == null)
@@ -129,12 +168,11 @@ public class CustomButton
         return CanUse.Invoke(PlayerControl.LocalPlayer);
     }
 
-    public void Dispose(object sender, EventArgs args)
+    public void Dispose()
     {
         PeasmodPlugin.Logger.LogInfo("CustomButton#Dispose");
         GameEventManager.GameStartEventHandler -= Start;
         HudEventManager.HudUpdateEventHandler -= Update;
-        GameEventManager.GameEndEventHandler -= Dispose;
         Button.gameObject.Destroy();
         Button = null;
         Options = null;

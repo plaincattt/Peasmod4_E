@@ -44,7 +44,7 @@ public class TestRole : CustomRole
     {
         PeasmodPlugin.Logger.LogInfo("test2");
         CustomEndReason = CustomEndGameManager.RegisterCustomEndReason("Peasplayer wins (obviously)", Color, false, false);
-        Button = new CustomButton(() =>
+        Button = new CustomButton("Peasplayer", () =>
             {
                 PeasmodPlugin.Logger.LogInfo("test");
                 CustomEndReason.Trigger();

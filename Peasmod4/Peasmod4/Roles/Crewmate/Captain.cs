@@ -37,7 +37,7 @@ public class Captain : CustomRole
 
     public void OnStart(object sender, EventArgs args)
     {
-        CallButton = new CustomButton(() =>
+        CallButton = new CustomButton("CaptainCall", () =>
         {
             PlayerControl.LocalPlayer.CmdReportDeadBody(null);
         }, "Call", Icon, player => player.IsCustomRole(this) && !player.Data.IsDead, _ => true, new CustomButton.CustomButtonOptions(CallCooldownOption.Value));
