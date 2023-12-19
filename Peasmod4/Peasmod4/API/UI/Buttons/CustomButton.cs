@@ -8,7 +8,7 @@ namespace Peasmod4.API.UI.Buttons;
 
 public class CustomButton
 {
-    public KillButton Button { get; internal set; }
+    public ActionButton Button { get; internal set; }
     public string ObjectName;
     
     public Action OnClick;
@@ -19,6 +19,7 @@ public class CustomButton
     public CustomButtonOptions Options;
     
     public float Cooldown;
+    public int UsesLeft;
     public PlayerControl Target;
     public bool Enabled = true;
 
@@ -62,14 +63,22 @@ public class CustomButton
         _hasBeenCreated = true;
         
         PeasmodPlugin.Logger.LogInfo("CustomButton#Start");
-        Button = GameObject.Instantiate(HudManager.Instance.KillButton, HudManager.Instance.KillButton.transform.parent);
+        Button = GameObject.Instantiate(HudManager.Instance.AbilityButton, HudManager.Instance.AbilityButton.transform.parent);
         Button.gameObject.SetActive(CouldBeUsed());
         Button.gameObject.name = ObjectName + "-CustomButton";
         Button.buttonLabelText.GetComponent<TextTranslatorTMP>().Destroy();
         Button.buttonLabelText.text = Text;
         Button.graphic.sprite = Image;
+        
         Cooldown = Options.MaxCooldown;
-        Button?.SetCoolDown(10f, Cooldown);
+        if (Cooldown != 0f)
+            Button?.SetCoolDown(10f, Cooldown);
+        
+        UsesLeft = Options.MaxUses;
+        if (Options.InfinitelyUsable)
+            Button.SetInfiniteUses();
+        else
+            Button.SetUsesRemaining(Options.MaxUses);
         
         var buttonComponent = Button.GetComponent<PassiveButton>();
         buttonComponent.OnClick.RemoveAllListeners();
@@ -83,6 +92,12 @@ public class CustomButton
                 OnClick();
                 Cooldown = Options.MaxCooldown;
 
+                if (!Options.InfinitelyUsable)
+                {
+                    UsesLeft--;
+                    Button.SetUsesRemaining(UsesLeft);
+                }
+                
                 if (Options.HasEffect)
                 {
                     Cooldown = Options.EffectDuration;
@@ -102,10 +117,10 @@ public class CustomButton
             if (Cooldown > 0f)
             {
                 Cooldown -= Time.deltaTime;
-                Button.SetCoolDown(Cooldown, Options.MaxCooldown);
+                Button.SetCoolDown(Cooldown, IsEffectActive ? Options.EffectDuration : Options.MaxCooldown);
             }
             else
-                Button.graphic.material.SetFloat("_Percent", 1f);
+                Button.graphic.material.SetFloat("_Percent", 0f);
             
             Button.cooldownTimerText.color = IsEffectActive ? Color.green : Color.white;
             if (Cooldown <= 0f && IsEffectActive)
@@ -159,6 +174,9 @@ public class CustomButton
         if (!PlayerControl.LocalPlayer.CanMove || PlayerControl.LocalPlayer.inVent) 
             return false;
 
+        if (!Options.InfinitelyUsable && UsesLeft <= 0)
+            return false;
+        
         if (Options._TargetType != CustomButtonOptions.TargetType.None && Target == null)
             return false;
         
@@ -181,19 +199,23 @@ public class CustomButton
 
     public class CustomButtonOptions
     {
-        public float MaxCooldown = 0f;
+        public float MaxCooldown;
         public bool HasEffect;
         public float EffectDuration;
         public Action OnEffectEnded;
+        public bool InfinitelyUsable;
+        public int MaxUses;
         public TargetType _TargetType;
 
         public CustomButtonOptions(float maxCooldown = 0f, bool hasEffect = false, float effectDuration = 0f,
-            Action onEffectEnded = null, TargetType targetType = TargetType.None)
+            Action onEffectEnded = null, bool infinitelyUsable = true, int maxUses = 0, TargetType targetType = TargetType.None)
         {
             MaxCooldown = maxCooldown;
             HasEffect = hasEffect;
             EffectDuration = effectDuration;
             OnEffectEnded = onEffectEnded;
+            InfinitelyUsable = infinitelyUsable;
+            MaxUses = maxUses;
             _TargetType = targetType;
         }
 
