@@ -207,6 +207,18 @@ public class Patches
         }
     }*/
 
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(ExileController), nameof(ExileController.Begin))]
+    public static void ConfirmRoleAfterEject(ExileController __instance)
+    {
+        if (__instance.exiled == null || !__instance.exiled.IsCustomRole() || !GameManager.Instance.LogicOptions.GetConfirmImpostor())
+            return;
+
+        var role = __instance.exiled.GetCustomRole();
+        __instance.completeString =
+            $"{__instance.exiled.PlayerName} was {(role.GetMembers().Count == 1 ? "The" : "A")} {role.Name} ({role.TeamText}).";
+    }
+
     [RegisterEventListener(EventType.GameStart)]
     public static void SetButtonLabelMaterial(object sender, EventArgs args)
     {
