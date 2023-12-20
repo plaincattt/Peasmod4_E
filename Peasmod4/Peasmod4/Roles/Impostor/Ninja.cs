@@ -11,7 +11,9 @@ using UnityEngine;
 
 namespace Peasmod4.Roles.Impostor;
 
+#if !API
 [RegisterCustomRole]
+#endif
 public class Ninja : CustomRole
 {
     public Ninja(Assembly assembly) : base(assembly)

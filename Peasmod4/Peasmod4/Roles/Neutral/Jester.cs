@@ -13,7 +13,9 @@ using UnityEngine;
 
 namespace Peasmod4.Roles.Neutral;
 
+#if !API
 [RegisterCustomRole]
+#endif
 public class Jester : CustomRole
 {
     public Jester(Assembly assembly) : base(assembly)

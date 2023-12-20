@@ -4,9 +4,11 @@
         <DebugType>embedded</DebugType>
 
         <VersionPrefix>1.0.0</VersionPrefix>
-        <VersionSuffix>dev</VersionSuffix>
+        <VersionSuffix>$(Configuration)</VersionSuffix>
         <Description>Mod generated using Reactor Template</Description>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <Configurations>Debug;Release;API;Dev</Configurations>
+        <Platforms>AnyCPU</Platforms>
         <!-- <Authors>your name</Authors> -->
     </PropertyGroup>
 

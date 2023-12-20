@@ -8,7 +8,9 @@ using UnityEngine;
 
 namespace Peasmod4.Roles.Crewmate;
 
+#if !API
 [RegisterCustomRole]
+#endif
 public class Sheriff : CustomRole
 {
     public Sheriff(Assembly assembly) : base(assembly)

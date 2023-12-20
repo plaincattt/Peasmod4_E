@@ -11,7 +11,9 @@ using UnityEngine;
 
 namespace Peasmod4.Roles.Crewmate;
 
+#if !API
 [RegisterCustomRole]
+#endif
 public class Cloak : CustomRole
 {
     public Cloak(Assembly assembly) : base(assembly)

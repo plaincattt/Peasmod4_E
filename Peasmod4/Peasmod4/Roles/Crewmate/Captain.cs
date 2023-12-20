@@ -9,7 +9,9 @@ using UnityEngine;
 
 namespace Peasmod4.Roles.Crewmate;
 
+#if !API
 [RegisterCustomRole]
+#endif
 public class Captain : CustomRole
 {
     public Captain(Assembly assembly) : base(assembly)

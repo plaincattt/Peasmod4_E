@@ -12,7 +12,9 @@ using UnityEngine;
 
 namespace Peasmod4;
 
+#if !API
 [RegisterCustomRole]
+#endif
 public class TestRole : CustomRole
 {
     public override string Name => "Peasplayer";
@@ -112,7 +114,7 @@ public class TestRole : CustomRole
                 () =>
                 {
                     PeasmodPlugin.Logger.LogInfo("test123333");
-                }));
+                }, false, 3));
     }
 
     public void OnHudUpdate(object sender, HudEventManager.HudUpdateEventArgs args)

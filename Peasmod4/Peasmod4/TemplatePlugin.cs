@@ -1,5 +1,4 @@
 ﻿using System;
-using AmongUs.GameOptions;
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
@@ -7,7 +6,6 @@ using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
 using Peasmod4.API.Components;
 using Peasmod4.API.Events;
-using Peasmod4.API.Roles;
 using Peasmod4.API.UI.EndGame;
 using Peasmod4.API.UI.Options;
 using Reactor;
@@ -48,10 +46,17 @@ public partial class PeasmodPlugin : BasePlugin
     
     public override void Load()
     {
+        #if !API
         ReactorVersionShower.TextUpdated += text =>
         {
-            text.text = "Not again\nPeasmod V4";
+            var versionText = "Not again\nPeasmod V4";
+            #if DEV
+            versionText += $"\n{Utility.StringColor.Red}Unstable Version!{Utility.StringColor.Reset}";
+            #endif
+            
+            text.text = versionText;
         };
+        #endif
 
         GameEventManager.GameEndEventHandler += (_, _) => CustomEndGameManager.EndReasons.Clear();
 
@@ -60,10 +65,16 @@ public partial class PeasmodPlugin : BasePlugin
         Harmony.PatchAll();
     }
 
+    #if !API
     [HarmonyPostfix]
     [HarmonyPatch(typeof(PingTracker), nameof(PingTracker.Update))]
     public static void PingPatch(PingTracker __instance)
     {
-        __instance.text.text += "\nPeasmod is (maybe) back!";
+        var pingText = "\nPeasmod is (maybe) back!";
+        #if DEV
+        pingText += $"\n{Utility.StringColor.Red}Unstable Version!{Utility.StringColor.Reset}";
+        #endif
+        __instance.text.text += pingText;
     }
+    #endif
 }
