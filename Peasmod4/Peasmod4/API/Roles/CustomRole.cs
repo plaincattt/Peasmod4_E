@@ -110,12 +110,12 @@ public abstract class CustomRole
             case Enums.Visibility.Impostor: return perspective.Data.Role.IsImpostor;
             case Enums.Visibility.Everyone: return true;
             case Enums.Visibility.NoOne: return false;
-            case Enums.Visibility.Custom: return IsRoleVisible(playerWithRole, perspective);
+            case Enums.Visibility.Custom: return IsRoleVisibleCustom(playerWithRole, perspective);
             default: throw new NotImplementedException("Unknown Visibility");
         }
     }
 
-    public virtual bool IsRoleVisible(PlayerControl playerWithRole, PlayerControl perspective)
+    public virtual bool IsRoleVisibleCustom(PlayerControl playerWithRole, PlayerControl perspective)
     {
         return false;
     }

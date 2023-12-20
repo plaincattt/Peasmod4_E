@@ -51,6 +51,13 @@ public class Patches
     
     #region PlayerEvents
     [HarmonyPostfix]
+    [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Die))]
+    public static void PlayerDiedPatch(PlayerControl __instance)
+    {
+        PlayerEventManager.PlayerDiedEventHandler?.Invoke(null, new PlayerEventManager.PlayerDiedEventArgs(__instance));
+    }
+    
+    [HarmonyPostfix]
     [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Exiled))]
     public static void PlayerExiledPatch(PlayerControl __instance)
     {

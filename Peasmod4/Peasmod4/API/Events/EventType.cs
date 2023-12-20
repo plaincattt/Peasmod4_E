@@ -11,6 +11,7 @@ public enum EventType
     // Meeting events
     MeetingEnd,
     // Player events
+    PlayerDied,
     PlayerExiled,
     PlayerMurdered
 }

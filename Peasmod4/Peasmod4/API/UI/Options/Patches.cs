@@ -37,7 +37,19 @@ public class Patches
         if (CustomOptionManager.MenuVisibleOptions.Count == 0)
             return;
         
-        foreach (var customOption in CustomOptionManager.MenuVisibleOptions)
+        foreach (var customOption in CustomOptionManager.MenuVisibleOptions.FindAll(option => option.AdvancedVanillaOption))
+        {
+            OptionBehaviour option = customOption.CreateOption();
+
+            option.transform.localPosition = new Vector3(option.transform.localPosition.x, FIRST_OPTION_Y -
+                (__instance.Children.Count) * OPTION_SIZE, -1f);
+        
+            var options = __instance.Children.ToList();
+            options.Add(option);
+            __instance.Children = options.ToArray();
+        }
+        
+        foreach (var customOption in CustomOptionManager.MenuVisibleOptions.FindAll(option => !option.AdvancedVanillaOption))
         {
             OptionBehaviour option = customOption.CreateOption();
 
@@ -65,7 +77,7 @@ public class Patches
                 _assemblies.Add(assembly);
         }*/
         //_assemblies.AddRange(CustomRoleManager.Roles.ConvertAll(role => role.Assembly).FindAll(assembly => !_assemblies.Contains(assembly)));
-        foreach (var assembly in CustomOptionManager.CustomOptions.ConvertAll(option => option.Assembly))
+        foreach (var assembly in CustomOptionManager.CustomOptions.FindAll(option => !option.AdvancedVanillaOption).ConvertAll(option => option.Assembly))
         {
             if (!_assemblies.Contains(assembly))
                 _assemblies.Add(assembly);
@@ -96,7 +108,7 @@ public class Patches
     
     [HarmonyPatch(typeof(IGameOptionsExtensions), nameof(IGameOptionsExtensions.ToHudString))]
     [HarmonyPrefix]
-    private static bool GameOptionsDataToHudStringPatch([HarmonyArgument(0)] IGameOptions gameOptions, ref string __result)
+    private static bool RenderCustomOptionsPatch([HarmonyArgument(0)] IGameOptions gameOptions, ref string __result)
     {
         if (PageIndex == 0)
             return true;
@@ -112,7 +124,7 @@ public class Patches
         builder.AppendLine($"Page {PageIndex} / {GetAssemblies().Count}: <b>{assembly.GetName().Name}</b>");
         builder.AppendLine();
         
-        var assemblyOptions = CustomOptionManager.CustomOptions.FindAll(option => option.Assembly == assembly);
+        var assemblyOptions = CustomOptionManager.CustomOptions.FindAll(option => option.Assembly == assembly && !option.AdvancedVanillaOption);
         var assemblyRoleOptions = CustomOptionManager.CustomRoleOptions.FindAll(option => option.Role.Assembly == assembly);
         if (assemblyOptions.Count > 0)
         {
@@ -149,13 +161,13 @@ public class Patches
 
     [HarmonyPatch(typeof(IGameOptionsExtensions), nameof(IGameOptionsExtensions.ToHudString))]
     [HarmonyPostfix]
-    private static void RemoveRoleOptionsText([HarmonyArgument(0)] IGameOptions gameOptions, ref string __result)
+    private static void RenderVanillaOptionsPatch([HarmonyArgument(0)] IGameOptions gameOptions, ref string __result)
     {
         if (PageIndex != 0)
             return;
 
         var builder = IGameOptionsExtensions.SettingsStringBuilder;
-        var text = builder.ToString();
+        var text = builder.ToString().Trim();
         builder.Clear();
         if (GetAssemblies().Count > 0)
         {
@@ -176,6 +188,11 @@ public class Patches
                         gameOptions.RoleOptions.GetNumPerGame(roleBehaviour.Role),
                         gameOptions.RoleOptions.GetChancePerGame(roleBehaviour.Role)
                     }), "");
+        }
+        
+        foreach (var option in CustomOptionManager.CustomOptions.FindAll(option => option.AdvancedVanillaOption))
+        {
+            option.RenderOption(builder);
         }
         
         __result = builder.ToString();

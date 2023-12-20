@@ -139,8 +139,11 @@ public class CustomButton
 
     public void OnHudSetActive(object sender, HudEventManager.HudSetActiveEventArgs args)
     {
+        if (Button == null || Button.gameObject == null)
+            return;
+        
         IsHudActive = args.Active;
-        Button?.gameObject.SetActive(CouldBeUsed() && IsHudActive);
+        Button.gameObject.SetActive(CouldBeUsed() && IsHudActive);
     }
 
     public bool CouldBeUsed()
@@ -191,7 +194,8 @@ public class CustomButton
         PeasmodPlugin.Logger.LogInfo("CustomButton#Dispose");
         GameEventManager.GameStartEventHandler -= Start;
         HudEventManager.HudUpdateEventHandler -= Update;
-        Button.gameObject.Destroy();
+        if (Button != null && Button.gameObject != null)
+            Button.gameObject.Destroy();
         Button = null;
         Options = null;
         CustomButtonManager.AllButtons.Remove(this);

@@ -42,12 +42,12 @@ public class Patches
         var crewmates = players.FindAll(player => !player.Role.IsImpostor && player.Role.IsSimpleRole);
         foreach (var playerInfo in crewmates)
         {
-            PeasmodPlugin.Logger.LogInfo("CrewMate: " + playerInfo);
+            PeasmodPlugin.Logger.LogInfo("Crewmate: " + playerInfo.Object.name);
         }
         var impostors = players.FindAll(player => player.Role.IsImpostor && player.Role.IsSimpleRole);
         foreach (var playerInfo in impostors)
         {
-            PeasmodPlugin.Logger.LogInfo("Impostor: " + playerInfo);
+            PeasmodPlugin.Logger.LogInfo("Impostor: " + playerInfo.Object.name);
         }
         
         var roles = CustomRoleManager.Roles;
@@ -153,31 +153,39 @@ public class Patches
     [HarmonyPatch(typeof(PlayerNameColor), nameof(PlayerNameColor.Set), typeof(PlayerControl))]
     public static void ShowRoleNamePatch([HarmonyArgument(0)] PlayerControl player)
     {
-        if (player.IsCustomRole())
-        {
-            var role = player.GetCustomRole();
-            if (!role.IsVisibleTo(player, PlayerControl.LocalPlayer))
-                player.cosmetics.SetNameColor(Color.white);
-            else
-                player.SetNameFromRole();
-        }
+        if (!player.IsVisibleTo(PlayerControl.LocalPlayer))
+            player.cosmetics.SetNameColor(Color.white);
+        else
+            player.SetNameFromRole();
     }
 
     [HarmonyPostfix]
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.UpdateButtons))]
-    public static void ShowRolesCorrectlyInMeetingPatch(MeetingHud __instance)
+    public static void ShowRolesCorrectlyInMeetingPatch1(MeetingHud __instance)
     {
         foreach (var voteArea in __instance.playerStates)
         {
             var player = voteArea.TargetPlayerId.GetPlayer();
-            var role = player.GetCustomRole();
-            if (role != null)
-            {
-                if (!role.IsVisibleTo(player, PlayerControl.LocalPlayer))
-                    voteArea.NameText.color = Color.white;
-                else
-                    voteArea.SetNameFromRole();
-            }
+            if (!player.IsVisibleTo(PlayerControl.LocalPlayer))
+                voteArea.NameText.color = Color.white;
+            else
+                voteArea.SetNameFromRole(player);
+        }
+    }
+    
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(PlayerVoteArea), nameof(PlayerVoteArea.SetCosmetics))]
+    public static void ShowRolesCorrectlyInMeetingPatch2(PlayerVoteArea __instance, [HarmonyArgument(0)] GameData.PlayerInfo playerInfo)
+    {
+        var player = playerInfo.Object;
+        if (!player.IsVisibleTo(PlayerControl.LocalPlayer))
+        {
+            __instance.NameText.text = player.name;
+            __instance.NameText.color = Color.white;
+        }
+        else
+        {
+            __instance.SetNameFromRole(player);
         }
     }
     
@@ -354,5 +362,17 @@ public class Patches
         roleTask.transform.SetParent(player.transform, false);
         roleTask.Text = $"</color>Role: {role.Color.GetTextColor()}{role.Name}\n{role.TaskText ?? role.Description}</color>\n";
         player.myTasks.Insert(0, roleTask);
+    }
+
+    [RegisterEventListener(EventType.PlayerDied)]
+    public static void ChangePlayerNameOnDeathListener(object sender, PlayerEventManager.PlayerDiedEventArgs args)
+    {
+        if (args.DeadPlayer.IsLocal())
+        {
+            foreach (var player in PlayerControl.AllPlayerControls)
+            {
+                PlayerNameColor.Set(player);
+            }
+        }
     }
 }

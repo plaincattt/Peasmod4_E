@@ -45,25 +45,38 @@ public static class Extensions
         return GetCustomRole(player) == role;
     }
 
+    public static bool IsVisibleTo(this PlayerControl source, PlayerControl otherPlayer)
+    {
+        if (otherPlayer.Data.IsDead && PeasmodPlugin.ShowRolesToDead.Value)
+            return true;
+        
+        if (source.IsCustomRole())
+        {
+            if (source.GetCustomRole().IsVisibleTo(source, otherPlayer))
+                return true;
+        }
+        else
+        {
+            if (source.Data.Role.TeamType == RoleTeamTypes.Impostor &&
+                otherPlayer.Data.Role.TeamType == RoleTeamTypes.Impostor)
+                return true;
+        }
+
+        return false;
+    }
+
     public static void SetNameFromRole(this PlayerControl player)
     {
-        var role = player.GetCustomRole();
-        if (role == null)
-            return;
-        
-        player.cosmetics.nameText.text = $"{player.name}\n<size=80%>{role.Name}</size>";
-        player.cosmetics.nameText.color = role.Color;
+        var role = player.Data.Role;
+        player.cosmetics.nameText.text = $"{player.name}\n<size=80%>{role.NiceName}</size>";
+        player.cosmetics.nameText.color = role.NameColor;
     }
     
-    public static void SetNameFromRole(this PlayerVoteArea voteArea)
+    public static void SetNameFromRole(this PlayerVoteArea voteArea, PlayerControl player)
     {
-        var player = voteArea.TargetPlayerId.GetPlayer();
-        var role = player.GetCustomRole();
-        if (role == null)
-            return;
-        
-        voteArea.NameText.text = $"{player.name}\n<size=80%>{role.Name}</size>";
-        voteArea.NameText.color = role.Color;
+        var role = player.Data.Role;
+        voteArea.NameText.text = $"{player.name}\n<size=80%>{role.NiceName}</size>";
+        voteArea.NameText.color = role.NameColor;
     }
     
     public static void SetRoleAfterIntro(this PlayerControl player, RoleTypes role)

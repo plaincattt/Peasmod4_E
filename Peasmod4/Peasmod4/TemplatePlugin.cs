@@ -9,6 +9,7 @@ using Peasmod4.API.Components;
 using Peasmod4.API.Events;
 using Peasmod4.API.Roles;
 using Peasmod4.API.UI.EndGame;
+using Peasmod4.API.UI.Options;
 using Reactor;
 using Reactor.Patches;
 
@@ -25,6 +26,8 @@ public partial class PeasmodPlugin : BasePlugin
     public static ManualLogSource Logger { get; private set; }
 
     public static ConfigFile ConfigFile { get; private set; }
+
+    public static CustomToggleOption ShowRolesToDead;
     
     public Harmony Harmony { get; } = new(Id);
 
@@ -51,6 +54,8 @@ public partial class PeasmodPlugin : BasePlugin
         };
 
         GameEventManager.GameEndEventHandler += (_, _) => CustomEndGameManager.EndReasons.Clear();
+
+        ShowRolesToDead = new CustomToggleOption("ShowRolesToDead", "Show roles to dead", true) { AdvancedVanillaOption = true };
         
         Harmony.PatchAll();
     }

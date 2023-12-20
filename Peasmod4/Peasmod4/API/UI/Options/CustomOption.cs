@@ -15,6 +15,8 @@ public abstract class CustomOption
     public bool MenuVisible { get; set; } = true;
         
     public bool AdvancedRoleOption { get; set; }
+    
+    public bool AdvancedVanillaOption { get; set; }
 
     public string HudFormat { get; set; } = "{0}";
         

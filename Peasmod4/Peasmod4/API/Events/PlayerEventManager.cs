@@ -4,6 +4,17 @@ namespace Peasmod4.API.Events;
 
 public class PlayerEventManager
 {
+    public static EventHandler<PlayerDiedEventArgs> PlayerDiedEventHandler;
+    public class PlayerDiedEventArgs : EventArgs
+    {
+        public PlayerControl DeadPlayer;
+
+        public PlayerDiedEventArgs(PlayerControl deadPlayer)
+        {
+            DeadPlayer = deadPlayer;
+        }
+    }
+    
     public static EventHandler<PlayerExiledEventArgs> PlayerExiledEventHandler;
     public class PlayerExiledEventArgs : EventArgs
     {

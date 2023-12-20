@@ -65,6 +65,34 @@ public class RegisterEventListenerAttribute : Attribute
                             }
                             HudEventManager.HudSetActiveEventHandler += (sender, eventArgs) => method.Invoke(null, new[] { sender, eventArgs });
                             break;
+                        case EventType.MeetingEnd:
+                            if (senderParameter.ParameterType != typeof(object) || args.ParameterType != typeof(MeetingEventManager.MeetingEndEventArgs))
+                            {
+                                throw new InvalidOperationException($"Method {method.FullDescription()} must have parameters sender of type object and args of type MeetingEndEventArgs.");
+                            }
+                            MeetingEventManager.MeetingEndEventHandler += (sender, eventArgs) => method.Invoke(null, new[] { sender, eventArgs });
+                            break;
+                        case EventType.PlayerDied:
+                            if (senderParameter.ParameterType != typeof(object) || args.ParameterType != typeof(PlayerEventManager.PlayerDiedEventArgs))
+                            {
+                                throw new InvalidOperationException($"Method {method.FullDescription()} must have parameters sender of type object and args of type PlayerDiedEventArgs.");
+                            }
+                            PlayerEventManager.PlayerDiedEventHandler += (sender, eventArgs) => method.Invoke(null, new[] { sender, eventArgs });
+                            break;
+                        case EventType.PlayerExiled:
+                            if (senderParameter.ParameterType != typeof(object) || args.ParameterType != typeof(PlayerEventManager.PlayerExiledEventArgs))
+                            {
+                                throw new InvalidOperationException($"Method {method.FullDescription()} must have parameters sender of type object and args of type PlayerExiledEventArgs.");
+                            }
+                            PlayerEventManager.PlayerExiledEventHandler += (sender, eventArgs) => method.Invoke(null, new[] { sender, eventArgs });
+                            break;
+                        case EventType.PlayerMurdered:
+                            if (senderParameter.ParameterType != typeof(object) || args.ParameterType != typeof(PlayerEventManager.PlayerMurderedEventArgs))
+                            {
+                                throw new InvalidOperationException($"Method {method.FullDescription()} must have parameters sender of type object and args of type PlayerMurderedEventArgs.");
+                            }
+                            PlayerEventManager.PlayerMurderedEventHandler += (sender, eventArgs) => method.Invoke(null, new[] { sender, eventArgs });
+                            break;
                         default:
                             throw new InvalidEnumArgumentException(
                                 $"Method {method.FullDescription()} must have EventType parameter.");
