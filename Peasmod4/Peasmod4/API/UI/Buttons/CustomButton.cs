@@ -12,14 +12,14 @@ public class CustomButton
     public string ObjectName;
     
     public Action OnClick;
-    public string Text;
-    public Sprite Image;
+    public string Text { get; private set; }
+    public Sprite Image { get; private set; }
     public Predicate<PlayerControl> CouldUse;
     public Predicate<PlayerControl> CanUse;
     public CustomButtonOptions Options;
     
-    public float Cooldown;
-    public int UsesLeft;
+    public float Cooldown { get; private set; }
+    public int UsesLeft { get; private set; }
     public PlayerControl Target;
     public bool Enabled = true;
 
@@ -187,6 +187,39 @@ public class CustomButton
             return false;
         
         return CanUse.Invoke(PlayerControl.LocalPlayer);
+    }
+
+    public void SetText(string text)
+    {
+        Text = text;
+        Button.buttonLabelText.text = Text;
+    }
+
+    public void SetImage(Sprite sprite)
+    {
+        Image = sprite;
+        Button.graphic.sprite = Image;
+    }
+    
+    public void SetCooldown(float cooldown, float maxCooldown = Single.NaN)
+    {
+        Cooldown = cooldown;
+        if (!float.IsNaN(maxCooldown))
+            Options.MaxCooldown = maxCooldown;
+        Button.SetCoolDown(cooldown, Options.MaxCooldown);
+    }
+
+    public void SetUsesLeft(int usesLeft)
+    {
+        Options.InfinitelyUsable = false;
+        UsesLeft = usesLeft;
+        Button.SetUsesRemaining(UsesLeft);
+    }
+
+    public void SetInfiniteUses()
+    {
+        Options.InfinitelyUsable = true;
+        Button.SetInfiniteUses();
     }
 
     public void Dispose()
