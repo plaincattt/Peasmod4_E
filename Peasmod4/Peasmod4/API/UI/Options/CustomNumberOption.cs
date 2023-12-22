@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
 using BepInEx.Configuration;
-using Il2CppSystem;
 using Peasmod4.API.Networking;
 using Reactor.Localization.Utilities;
 using Reactor.Networking.Rpc;
@@ -17,9 +16,14 @@ public class CustomNumberOption : CustomOption
 
     public float Increment;
 
+    public FloatRange _Range;
     public FloatRange Range;
+    public float max;
+    public float min;
 
     public bool IsDecimal;
+
+    public bool ZeroIsInfinity;
     
     private ConfigEntry<float> _configEntry;
 
@@ -45,6 +49,13 @@ public class CustomNumberOption : CustomOption
     
     public void SetValue(float newValue)
     {
+        PeasmodPlugin.Logger.LogInfo("1a - " + Title + ": " + newValue + " - " + max + " - " + min + " - " + _Range.Contains(newValue));
+        if (max < newValue || min > newValue)
+        {
+            ((NumberOption)Option).Value = Value;
+            return;
+        }
+        
         var oldValue = Value;
         Value = newValue;
         
@@ -57,10 +68,12 @@ public class CustomNumberOption : CustomOption
         {
             Rpc<RpcUpdateSetting>.Instance.Send(new RpcUpdateSetting.Data(this, newValue));
         }
+        PeasmodPlugin.Logger.LogInfo("1b - " + Title + ": " + newValue + " - " + Range.max + " - " + Range.min + " - " + Range.Contains(newValue));
     }
 
     public override OptionBehaviour CreateOption()
     {
+        PeasmodPlugin.Logger.LogInfo("2a - " + Title + ": " + " - " + Range.max + " - " + Range.min);
         NumberOption option = Object.Instantiate(CustomOptionManager.NumberOptionPrefab, CustomOptionManager.NumberOptionPrefab.transform.parent);
         option.name = $"{Title}-Option";
         option.Title = CustomStringName.CreateAndRegister(Title);
@@ -70,14 +83,16 @@ public class CustomNumberOption : CustomOption
         option.Increment = Increment;
         option.ValidRange = Range;
         option.FormatString = IsDecimal ? "0.0#" : "0";
+        option.ZeroIsInfinity = ZeroIsInfinity;
         option.OnValueChanged = new System.Action<OptionBehaviour>(optionBehaviour => SetValue(optionBehaviour.GetFloat()));
 
         Option = option;
         
+        PeasmodPlugin.Logger.LogInfo("2b - " + Title + ": " + " - " + Range.max + " - " + Range.min);
         return option;
     }
 
-    public CustomNumberOption(string id, string title, float defaultValue, NumberSuffixes suffix, float increment, FloatRange range, bool isDecimal) : base(title)
+    public CustomNumberOption(string id, string title, float defaultValue, NumberSuffixes suffix, float increment, FloatRange range, bool isDecimal, bool zeroIsInfinity = false) : base(title)
     {
         Assembly = Assembly.GetCallingAssembly();
         Id = $"{Assembly.GetName().Name}.NumberOption.{id}";
@@ -94,7 +109,12 @@ public class CustomNumberOption : CustomOption
         Suffix = suffix;
         Increment = increment;
         Range = range;
+        _Range = range;
+        max = range.max;
+        min = range.min;
+        PeasmodPlugin.Logger.LogInfo(Title + ": " + Range.max  + " - " + Range.min);
         IsDecimal = isDecimal;
+        ZeroIsInfinity = zeroIsInfinity;
         HudFormat = "{0}: {1}{2}";
             
         CustomOptionManager.CustomOptions.Add(this);

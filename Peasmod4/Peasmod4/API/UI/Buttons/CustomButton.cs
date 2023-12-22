@@ -24,7 +24,7 @@ public class CustomButton
     public bool Enabled = true;
 
     public bool IsEffectActive { get; private set; }
-    public bool IsHudActive { get; private set; }
+    public bool IsHudActive { get; private set; } = true;
 
     private bool _hasBeenCreated;
 
@@ -111,6 +111,8 @@ public class CustomButton
     {
         if (Button == null || Button.gameObject == null)
             return;
+        
+        Button.gameObject.SetActive(CouldBeUsed() && IsHudActive);
 
         if (CouldBeUsed() && PlayerControl.LocalPlayer.IsKillTimerEnabled)
         {

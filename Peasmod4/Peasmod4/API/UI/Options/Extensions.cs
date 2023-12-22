@@ -27,7 +27,8 @@ public static class Extensions
                 builder.AppendLine(prefix + String.Format(_option.HudFormat, _option.Title, _option.Value ? "On" : "Off") + Utility.StringColor.Reset);
                 break;
             case CustomNumberOption _option:
-                builder.AppendLine(prefix + String.Format(_option.HudFormat, _option.Title, Math.Round(_option.Value, 2),
+                var value = Math.Round(_option.Value, 2);
+                builder.AppendLine(prefix + String.Format(_option.HudFormat, _option.Title, _option.ZeroIsInfinity && value == 0f ? "\u221e" : value,
                     _option.Suffix == NumberSuffixes.None ? "" :
                     _option.Suffix == NumberSuffixes.Multiplier ? "x" :
                     _option.Suffix == NumberSuffixes.Seconds ? "s" : "") + Utility.StringColor.Reset);

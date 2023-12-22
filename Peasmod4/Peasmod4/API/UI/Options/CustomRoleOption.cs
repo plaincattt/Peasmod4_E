@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using AmongUs.GameOptions;
 using BepInEx.Configuration;
 using Peasmod4.API.Roles;
 using Reactor.Utilities.Extensions;
@@ -38,6 +38,8 @@ public class CustomRoleOption : CustomOption
         Count = _countConfigEntry?.Value ?? 0;
         if (AdjustRoleSettings)
             Role.Count = Count;
+        else
+            Count = Role.Count;
         
         try
         {
@@ -50,6 +52,8 @@ public class CustomRoleOption : CustomOption
         Chance = _chanceConfigEntry?.Value ?? 0;
         if (AdjustRoleSettings)
             Role.Chance = Chance;
+        else
+            Chance = Role.Chance;
         
         CustomOptionManager.CustomRoleOptions.Add(this);
     }
@@ -134,12 +138,46 @@ public class CustomRoleOption : CustomOption
         {
             option.gameObject.DestroyImmediate();
         }
+
+        var scrollerObj = new GameObject("Scroller");
+        scrollerObj.transform.parent = tab.transform;
+        scrollerObj.layer = LayerMask.NameToLayer("UI");
+        scrollerObj.transform.localPosition = new Vector3(0f, 0f);
+        var scroller = scrollerObj.AddComponent<Scroller>();
+        scroller.allowX = false;
+        scroller.allowY = true;
+        scroller.transform.localScale = Vector3.one;
+        scroller.active = true;
+        scroller.velocity = new Vector2(0, 0);
+        scroller.ContentYBounds = new FloatRange(0, (3.54f - AdvancedOptions.Length * 0.56f) * (-1f));
+        scroller.enabled = true;
+
+        var inner = new GameObject("Inner");
+        inner.transform.parent = scrollerObj.transform;
+        inner.transform.localPosition = new Vector3(0f, 0f);
+        scroller.Inner = inner.transform;
+
+        /*var boxCollider = new GameObject("Mask");
+        boxCollider.transform.parent = tab.transform;
+        var col = boxCollider.AddComponent<BoxCollider2D>();
+        col.size = new Vector2(1f, 1f);*/
+
+        var collider = Object.Instantiate(tab.transform.parent.parent.FindChild("Background").FindChild("MaskArea"), tab.transform);
+        collider.name = "Collider";
+        collider.GetComponent<SpriteMask>().Destroy();
+        collider.gameObject.SetActive(false);
+        collider.localPosition = new Vector3(0f, 0f);
+        
+        //scroller.Hitbox = boxCollider;
+        var list = new List<Collider2D>();
+        list.Add(collider.GetComponent<BoxCollider2D>());
+        scroller.Colliders = list.ToArray();
         
         foreach (var advancedOption in AdvancedOptions)
         {
             var option = advancedOption.CreateOption();
             var optionTransform = option.transform;
-            optionTransform.parent = tab.transform;
+            optionTransform.parent = inner.transform;
             //optionTransform.localScale = Vector3.one;
             optionTransform.localPosition =
                 new Vector3(-1.25f, 0.06f - AdvancedOptions.ToList().IndexOf(advancedOption) * 0.56f, 0f);

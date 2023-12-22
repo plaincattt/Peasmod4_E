@@ -45,6 +45,13 @@ public static class Extensions
         return GetCustomRole(player) == role;
     }
 
+    public static bool IsCustomRole<T>(this PlayerControl player) where T : CustomRole
+    {
+        return player.IsCustomRole(CustomRoleManager.GetRole<T>());
+    }
+
+    public static bool IsCustomRole<T>(this GameData.PlayerInfo player) where T : CustomRole => IsCustomRole<T>(player.Object);
+
     public static bool IsVisibleTo(this PlayerControl source, PlayerControl otherPlayer)
     {
         if (otherPlayer.Data.IsDead && PeasmodPlugin.ShowRolesToDead.Value)

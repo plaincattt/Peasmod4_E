@@ -124,7 +124,7 @@ public class Patches
         builder.AppendLine($"Page {PageIndex} / {GetAssemblies().Count}: <b>{assembly.GetName().Name}</b>");
         builder.AppendLine();
         
-        var assemblyOptions = CustomOptionManager.CustomOptions.FindAll(option => option.Assembly == assembly && !option.AdvancedVanillaOption);
+        var assemblyOptions = CustomOptionManager.CustomOptions.FindAll(option => option.Assembly == assembly && !option.AdvancedVanillaOption && !option.AdvancedRoleOption);
         var assemblyRoleOptions = CustomOptionManager.CustomRoleOptions.FindAll(option => option.Role.Assembly == assembly);
         if (assemblyOptions.Count > 0)
         {
@@ -235,6 +235,17 @@ public class Patches
             {
                 var newSetting = option.CreateOption();
                 newSetting.transform.localPosition = roleSettingPrefab.transform.localPosition - new Vector3(0f , (__instance.AllRoleSettings.ToArray().Count + CustomOptionManager.CustomRoleOptions.IndexOf(option) + 1) * 0.5f);
+
+                if (!option.AdjustRoleSettings)
+                {
+                    var roleOptionObject = (RoleOptionSetting)newSetting;
+                    //roleOptionObject.ChanceText.gameObject.SetActive(false);
+                    //roleOptionObject.CountText.gameObject.SetActive(false);
+                    roleOptionObject.transform.FindChild("Count Plus_TMP").gameObject.SetActive(false);
+                    roleOptionObject.transform.FindChild("Count Minus_TMP").gameObject.SetActive(false);
+                    roleOptionObject.transform.FindChild("Chance Plus_TMP").gameObject.SetActive(false);
+                    roleOptionObject.transform.FindChild("Chance Minus_TMP").gameObject.SetActive(false);
+                }
                 
                 if (__instance.AllAdvancedSettingTabs.WrapToSystem()
                     .Find(button => button.Type == option.Role.RoleBehaviour.Role) == null)
