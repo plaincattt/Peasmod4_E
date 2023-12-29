@@ -234,7 +234,8 @@ public class Patches
             if (option.GetType() == typeof(CustomRoleOption))
             {
                 var newSetting = option.CreateOption();
-                newSetting.transform.localPosition = roleSettingPrefab.transform.localPosition - new Vector3(0f , (__instance.AllRoleSettings.ToArray().Count + CustomOptionManager.CustomRoleOptions.IndexOf(option) + 1) * 0.5f);
+                newSetting.transform.localPosition = roleSettingPrefab.transform.localPosition - 
+                    new Vector3(0f , (__instance.AllRoleSettings.ToArray().Count + CustomOptionManager.CustomRoleOptions.IndexOf(option) + 1 + GetAssemblies().IndexOf(option.Assembly)) * 0.5f);
 
                 if (!option.AdjustRoleSettings)
                 {
@@ -260,7 +261,7 @@ public class Patches
         }
 
         var scroller = roleSettingPrefab.gameObject.transform.parent.parent.GetComponent<Scroller>();
-        scroller.ContentYBounds.max = (CustomOptionManager.CustomRoleOptions.Count - 3) * 0.5f;
+        scroller.ContentYBounds.max = (CustomOptionManager.CustomRoleOptions.Count + GetAssemblies().Count - 5) * 0.5f;
         scroller.transform.FindChild("UI_Scrollbar").gameObject.SetActive(true);
     }
 
@@ -271,7 +272,18 @@ public class Patches
     {
         var customOption = optionBehaviour.GetCustomOption();
         PeasmodPlugin.Logger.LogInfo(customOption);
-        if (customOption == null || customOption is not CustomRoleOption)
+        if (customOption == null)
+            return true;
+
+        if (customOption is CustomNumberOption)
+        {
+            var customNumberOption = customOption as CustomNumberOption;
+            var numberOption = optionBehaviour as NumberOption;
+            numberOption.ValidRange = new FloatRange(customNumberOption.Range.min, customNumberOption.Range.max);
+            return true;
+        }
+
+        if (customOption is not CustomRoleOption)
             return true;
 
         var roleOption = optionBehaviour as RoleOptionSetting;
@@ -279,12 +291,6 @@ public class Patches
         customRoleOption.SetValue(roleOption.RoleMaxCount, roleOption.RoleChance);
         customRoleOption.UpdateValuesAndText();
         PeasmodPlugin.Logger.LogInfo("Data has changed: " + roleOption.RoleMaxCount + " " + roleOption.RoleChance);
-        /*var options = GameManager.Instance.LogicOptions.currentGameOptions.RoleOptions;
-        PeasmodPlugin.Logger.LogInfo(roleOption.Role.NiceName + " " + options.GetNumPerGame(roleOption.Role.Role) + " " + options.GetChancePerGame(roleOption.Role.Role));
-        roleOption.CountText.text = roleOption.RoleMaxCount.ToString();
-        roleOption.ChanceText.text = roleOption.RoleChance.ToString() + "%";*/
-        //GameOptionsManager.Instance.CurrentGameOptions.RoleOptions.SetRoleRate(roleOption.Role.Role, roleOption.RoleMaxCount, roleOption.RoleChance);
-        //roleOption.UpdateValuesAndText(GameOptionsManager.Instance.CurrentGameOptions.RoleOptions);
         
         return false;
     }

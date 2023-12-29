@@ -16,10 +16,7 @@ public class CustomNumberOption : CustomOption
 
     public float Increment;
 
-    public FloatRange _Range;
     public FloatRange Range;
-    public float max;
-    public float min;
 
     public bool IsDecimal;
 
@@ -49,13 +46,6 @@ public class CustomNumberOption : CustomOption
     
     public void SetValue(float newValue)
     {
-        PeasmodPlugin.Logger.LogInfo("1a - " + Title + ": " + newValue + " - " + max + " - " + min + " - " + _Range.Contains(newValue));
-        if (max < newValue || min > newValue)
-        {
-            ((NumberOption)Option).Value = Value;
-            return;
-        }
-        
         var oldValue = Value;
         Value = newValue;
         
@@ -81,7 +71,7 @@ public class CustomNumberOption : CustomOption
         option.Value = Value;
         option.SuffixType = Suffix;
         option.Increment = Increment;
-        option.ValidRange = Range;
+        option.ValidRange = new FloatRange(Range.min, Range.max);
         option.FormatString = IsDecimal ? "0.0#" : "0";
         option.ZeroIsInfinity = ZeroIsInfinity;
         option.OnValueChanged = new System.Action<OptionBehaviour>(optionBehaviour => SetValue(optionBehaviour.GetFloat()));
@@ -109,9 +99,6 @@ public class CustomNumberOption : CustomOption
         Suffix = suffix;
         Increment = increment;
         Range = range;
-        _Range = range;
-        max = range.max;
-        min = range.min;
         PeasmodPlugin.Logger.LogInfo(Title + ": " + Range.max  + " - " + Range.min);
         IsDecimal = isDecimal;
         ZeroIsInfinity = zeroIsInfinity;
