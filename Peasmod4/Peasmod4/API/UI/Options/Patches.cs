@@ -261,8 +261,20 @@ public class Patches
         }
 
         var scroller = roleSettingPrefab.gameObject.transform.parent.parent.GetComponent<Scroller>();
-        scroller.ContentYBounds.max = (CustomOptionManager.CustomRoleOptions.Count + GetAssemblies().Count - 5) * 0.5f;
+        scroller.ContentYBounds.max =
+            (CustomOptionManager.CustomRoleOptions.Count + GetAssemblies().Count - 4.5f) * 0.5f;
         scroller.transform.FindChild("UI_Scrollbar").gameObject.SetActive(true);
+    }
+
+    [HarmonyPrefix]
+    [HarmonyPatch(typeof(NumberOption), nameof(NumberOption.Increase))]
+    [HarmonyPatch(typeof(NumberOption), nameof(NumberOption.Decrease))]
+    public static void FixValidRangePatch(NumberOption __instance)
+    {
+        var customNumberOption = __instance.GetCustomOption() as CustomNumberOption;
+        if (customNumberOption == null)
+            return;
+        __instance.ValidRange = new FloatRange(customNumberOption.Range.min, customNumberOption.Range.max);
     }
 
     [HarmonyPatch(typeof(RolesSettingsMenu), nameof(RolesSettingsMenu.ValueChanged))]
@@ -272,18 +284,8 @@ public class Patches
     {
         var customOption = optionBehaviour.GetCustomOption();
         PeasmodPlugin.Logger.LogInfo(customOption);
-        if (customOption == null)
-            return true;
-
-        if (customOption is CustomNumberOption)
-        {
-            var customNumberOption = customOption as CustomNumberOption;
-            var numberOption = optionBehaviour as NumberOption;
-            numberOption.ValidRange = new FloatRange(customNumberOption.Range.min, customNumberOption.Range.max);
-            return true;
-        }
-
-        if (customOption is not CustomRoleOption)
+        
+        if (customOption == null || customOption is not CustomRoleOption)
             return true;
 
         var roleOption = optionBehaviour as RoleOptionSetting;
