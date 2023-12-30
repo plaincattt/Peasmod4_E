@@ -266,17 +266,6 @@ public class Patches
         scroller.transform.FindChild("UI_Scrollbar").gameObject.SetActive(true);
     }
 
-    [HarmonyPrefix]
-    [HarmonyPatch(typeof(NumberOption), nameof(NumberOption.Increase))]
-    [HarmonyPatch(typeof(NumberOption), nameof(NumberOption.Decrease))]
-    public static void FixValidRangePatch(NumberOption __instance)
-    {
-        var customNumberOption = __instance.GetCustomOption() as CustomNumberOption;
-        if (customNumberOption == null)
-            return;
-        __instance.ValidRange = new FloatRange(customNumberOption.Range.min, customNumberOption.Range.max);
-    }
-
     [HarmonyPatch(typeof(RolesSettingsMenu), nameof(RolesSettingsMenu.ValueChanged))]
     [HarmonyPrefix]
     public static bool RoleOptionRoleRateChangePatch(RolesSettingsMenu __instance,

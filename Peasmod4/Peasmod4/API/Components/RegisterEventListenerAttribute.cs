@@ -47,9 +47,9 @@ public class RegisterEventListenerAttribute : Attribute
                         case EventType.GameEnd:
                             if (senderParameter.ParameterType != typeof(object) || args.ParameterType != typeof(GameEventManager.GameEndEventArgs))
                             {
-                                throw new InvalidOperationException($"Method {method.FullDescription()} must have parameters sender of type object and args of type EventArgs.");
+                                throw new InvalidOperationException($"Method {method.FullDescription()} must have parameters sender of type object and args of type GameEndEventArgs.");
                             }
-                            GameEventManager.GameStartEventHandler += (sender, eventArgs) => method.Invoke(null, new[] { sender, eventArgs });
+                            GameEventManager.GameEndEventHandler += (sender, eventArgs) => method.Invoke(null, new[] { sender, eventArgs });
                             break;
                         case EventType.HudUpdate:
                             if (senderParameter.ParameterType != typeof(object) || args.ParameterType != typeof(HudEventManager.HudUpdateEventArgs))

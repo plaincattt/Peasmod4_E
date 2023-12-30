@@ -44,7 +44,8 @@ public class RpcEndGame : PlayerCustomRpc<PeasmodPlugin, RpcEndGame.Data>
     {
         if (AmongUsClient.Instance.AmHost)
         {
-            Utility.DoAfterTimeout(() => GameManager.Instance.RpcEndGame(data.EndReason, false), 1f);
+            GameManager.Instance.RpcEndGame(data.EndReason, false);
+            //Utility.DoAfterTimeout(() => GameManager.Instance.RpcEndGame(data.EndReason, false), 1f);
         }
     }
 }
