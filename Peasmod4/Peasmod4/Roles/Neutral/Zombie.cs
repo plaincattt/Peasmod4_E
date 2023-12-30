@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using HarmonyLib;
 using Peasmod4.API;
 using Peasmod4.API.Components;
 using Peasmod4.API.Events;
@@ -11,14 +12,21 @@ using UnityEngine;
 
 namespace Peasmod4.Roles.Neutral;
 
+[HarmonyPatch]
 [RegisterCustomRole]
 public class Zombie : CustomRole
 {
     public Zombie(Assembly assembly) : base(assembly)
     {
+        Reach = new CustomStringOption("ZombieReach", "Reach", "Small", "Medium", "Long");
         InfectCooldown = new CustomNumberOption("ZombieInfectCooldown", "Infect cooldown", 20f, NumberSuffixes.Seconds,
             2.5f, new FloatRange(10f, 100f), true);
-        RoleOption = new CustomRoleOption(this, true, InfectCooldown);
+        SpeedMod = new CustomNumberOption("ZombieSpeedMod", "Speed modification", 1f, NumberSuffixes.Multiplier,
+            0.25f, new FloatRange(0.25f, 1.5f), true);
+        LightMod = new CustomNumberOption("ZombieLightMod", "Vision modification", 1f, NumberSuffixes.Multiplier,
+            0.25f, new FloatRange(0.25f, 1.5f), true);
+        VisibleToEveryone = new CustomToggleOption("ZombieVisibleToEveryone", "Visible to everyone", false);
+        RoleOption = new CustomRoleOption(this, true, Reach, InfectCooldown, SpeedMod, LightMod, VisibleToEveryone);
 
         GameEventManager.GameStartEventHandler += (_, _) =>
             EndReason = CustomEndGameManager.RegisterCustomEndReason("Zombies infected the crew", ZombieColor, false,
@@ -35,13 +43,17 @@ public class Zombie : CustomRole
     public override string TaskText => "Infect every crewmate";
     public override Color Color => ZombieColor;
     public readonly Color ZombieColor = new Color(109 / 255f, 142 / 255f, 74 / 255f);
-    public override Enums.Visibility Visibility => Enums.Visibility.Role;
+    public override Enums.Visibility Visibility => VisibleToEveryone.Value ? Enums.Visibility.Everyone : Enums.Visibility.Role;
     public override Enums.Team Team => Enums.Team.Role;
     public override bool HasToDoTasks => false;
     public override int MaxCount => 1;
 
     public CustomButton InfectButton;
+    public CustomStringOption Reach;
     public CustomNumberOption InfectCooldown;
+    public CustomNumberOption SpeedMod;
+    public CustomNumberOption LightMod;
+    public CustomToggleOption VisibleToEveryone;
     public CustomRoleOption RoleOption;
     public CustomEndGameManager.CustomEndReason EndReason;
     public bool MadeWinCall;
@@ -55,10 +67,22 @@ public class Zombie : CustomRole
                 if (InfectButton.PlayerTarget.Data.Role.IsImpostor)
                     return;
                 InfectButton.PlayerTarget.RpcSetCustomRole(this);
+                
+                if (PlayerControl.AllPlayerControls.WrapToSystem().FindAll(player => player != null &&
+                        !player.IsCustomRole(this) && !player.Data.IsDead && !player.Data.Role.IsImpostor).Count == 0)
+                {
+                    EndReason.Trigger();
+                    MadeWinCall = true;
+                }
             }, "Infect",
             Utility.CreateSprite("Peasmod4.Placeholder.png", 128f), player => player.IsCustomRole(this),
             player => player.IsCustomRole(this), new CustomButton.CustomButtonOptions(InfectCooldown.Value, targetType: CustomButton.CustomButtonOptions.TargetType.Player, 
-                playerTargetSelector: () => PlayerControl.LocalPlayer.FindNearestPlayer(player => !player.IsCustomRole(this) && !player.Data.IsDead), playerTargetOutline: ZombieColor));
+                playerTargetSelector: () => PlayerControl.LocalPlayer.FindNearestPlayer(player => !player.IsCustomRole(this) && !player.Data.IsDead, Reach.Value + 1), playerTargetOutline: ZombieColor));
+        
+        if (PlayerControl.LocalPlayer.IsCustomRole(this))
+        {
+            PlayerControl.LocalPlayer.MyPhysics.Speed *= SpeedMod.Value;
+        }
     }
 
     public void OnUpdate(object sender, HudEventManager.HudUpdateEventArgs args)
@@ -84,4 +108,14 @@ public class Zombie : CustomRole
 
         return false;
     }
-}    
+
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.CalculateLightRadius))]
+    public static void AdjustLightRadius(ShipStatus __instance, ref float __result)
+    {
+        if (PlayerControl.LocalPlayer.IsCustomRole<Zombie>())
+        {
+            __result *= CustomRoleManager.GetRole<Zombie>().LightMod.Value;
+        }
+    }
+}
