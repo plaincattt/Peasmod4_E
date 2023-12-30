@@ -216,7 +216,7 @@ public class Patches
 
         var role = __instance.exiled.GetCustomRole();
         __instance.completeString =
-            $"{__instance.exiled.PlayerName} was {(role.GetMembers().Count == 1 ? "The" : "A")} {role.Name} ({role.TeamText}).";
+            $"{__instance.exiled.PlayerName} was {role.Color.GetTextColor()}{(role.GetMembers().Count == 1 ? "The" : "A")} {role.Name}{Utility.StringColor.Reset} ({role.TeamText}).";
     }
 
     [RegisterEventListener(EventType.GameStart)]

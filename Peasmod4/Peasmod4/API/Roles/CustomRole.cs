@@ -137,6 +137,8 @@ public abstract class CustomRole
     {
         
     }
+
+    public virtual void OnRoleAssigned() { }
     
     public CustomRole(Assembly assembly)
     {

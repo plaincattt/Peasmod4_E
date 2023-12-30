@@ -15,11 +15,11 @@ public class Patches
     }
     
     [HarmonyPostfix]
-    [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnGameEnd))]
-    public static void GameEndPatch([HarmonyArgument(0)] EndGameResult result)
+    [HarmonyPatch(typeof(GameManager), nameof(GameManager.EndGame))]
+    public static void GameEndPatch()//([HarmonyArgument(0)] EndGameResult result)
     {
         PeasmodPlugin.Logger.LogInfo("GameEnd");
-        GameEventManager.GameEndEventHandler?.Invoke(null, new GameEventManager.GameEndEventArgs(result));
+        GameEventManager.GameEndEventHandler?.Invoke(null, new GameEventManager.GameEndEventArgs(TempData.EndReason));
     }
     #endregion
 

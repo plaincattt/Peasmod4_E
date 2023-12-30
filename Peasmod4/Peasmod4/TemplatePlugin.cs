@@ -58,8 +58,6 @@ public partial class PeasmodPlugin : BasePlugin
         };
         #endif
 
-        GameEventManager.GameEndEventHandler += (_, _) => CustomEndGameManager.EndReasons.Clear();
-
         ShowRolesToDead = new CustomToggleOption("ShowRolesToDead", "Show roles to dead", true) { AdvancedVanillaOption = true };
         
         Harmony.PatchAll();

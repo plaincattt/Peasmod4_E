@@ -1,8 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Peasmod4.API.Components;
+using Peasmod4.API.Events;
 using Peasmod4.API.Networking;
 using Reactor.Networking.Rpc;
 using UnityEngine;
+using EventType = Peasmod4.API.Events.EventType;
 
 namespace Peasmod4.API.UI.EndGame;
 
@@ -23,6 +25,12 @@ public class CustomEndGameManager
             new CustomEndReason((GameOverReason)10 + EndReasonsId++, reasonText, color, crewWon, impostorWon);
         EndReasons.Add(reason);
         return reason;
+    }
+
+    [RegisterEventListener(EventType.GameEnd)]
+    public static void OnGameEnd(object sender, GameEventManager.GameEndEventArgs args)
+    {
+        EndReasons.Clear();
     }
 
     public class CustomEndReason

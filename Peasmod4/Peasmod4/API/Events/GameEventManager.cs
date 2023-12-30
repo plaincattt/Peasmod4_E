@@ -9,11 +9,11 @@ public class GameEventManager
     public static EventHandler<GameEndEventArgs> GameEndEventHandler;
     public class GameEndEventArgs : EventArgs
     {
-        public EndGameResult Result;
+        public GameOverReason Reason;
         
-        public GameEndEventArgs(EndGameResult result)
+        public GameEndEventArgs(GameOverReason reason)
         {
-            Result = result;
+            Reason = reason;
         }
     }
 }

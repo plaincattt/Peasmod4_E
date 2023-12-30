@@ -45,7 +45,7 @@ public class Patches
         {
             foreach (var customRole in CustomRoleManager.Roles)
             {
-                foreach (var player in PlayerControl.AllPlayerControls.WrapToSystem().FindAll(player => player.IsCustomRole(customRole)))
+                foreach (var player in PlayerControl.AllPlayerControls) // .WrapToSystem().FindAll(player => player.IsCustomRole(customRole))
                 {
                     var _ = false;
                     if (customRole.DidWin(endGameResult.GameOverReason, player, ref _) && TempData.winners.WrapToSystem().Find(data => data.PlayerName == player.name) == null)

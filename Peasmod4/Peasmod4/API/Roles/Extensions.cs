@@ -115,7 +115,10 @@ public static class Extensions
         };
         
         if (player.IsLocal())
+        {
             Patches.ToggleButtons(null, new HudEventManager.HudSetActiveEventArgs(HudManager.Instance, true));
+            player.GetCustomRole().OnRoleAssigned();
+        }
     }
 
     public static List<PlayerControl> GetMembers(this CustomRole customRole) =>
