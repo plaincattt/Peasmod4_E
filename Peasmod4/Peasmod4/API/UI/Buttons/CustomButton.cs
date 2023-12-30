@@ -20,7 +20,7 @@ public class CustomButton
     
     public float Cooldown { get; private set; }
     public int UsesLeft { get; private set; }
-    public PlayerControl Target;
+    public PlayerControl PlayerTarget;
     public bool Enabled = true;
 
     public bool IsEffectActive { get; private set; }
@@ -123,6 +123,20 @@ public class CustomButton
             }
             else
                 Button.graphic.material.SetFloat("_Percent", 0f);
+
+            if (Options._TargetType == CustomButtonOptions.TargetType.Player)
+            {
+                var newTarget = Options.PlayerTargetSelector.Invoke();
+                if (PlayerTarget && PlayerTarget != newTarget)
+                {
+                    PlayerTarget.cosmetics.SetOutline(false, new Il2CppSystem.Nullable<Color>(Options.PlayerTargetOutline));
+                }
+                PlayerTarget = newTarget;
+                if (PlayerTarget)
+                {
+                    newTarget.cosmetics.SetOutline(true, new Il2CppSystem.Nullable<Color>(Options.PlayerTargetOutline));
+                }
+            }
             
             Button.cooldownTimerText.color = IsEffectActive ? Color.green : Color.white;
             if (Cooldown <= 0f && IsEffectActive)
@@ -133,7 +147,7 @@ public class CustomButton
             }
         }
         
-        if (CanBeUsed())
+        if (CanBeUsed(true))
             Button.SetEnabled();
         else
             Button.SetDisabled();
@@ -165,7 +179,7 @@ public class CustomButton
         return CouldUse.Invoke(PlayerControl.LocalPlayer);
     }
 
-    public bool CanBeUsed()
+    public bool CanBeUsed(bool ignoreCooldown = false)
     {
         if (!CouldBeUsed())
             return false;
@@ -182,10 +196,10 @@ public class CustomButton
         if (!Options.InfinitelyUsable && UsesLeft <= 0)
             return false;
         
-        if (Options._TargetType != CustomButtonOptions.TargetType.None && Target == null)
+        if (Options._TargetType != CustomButtonOptions.TargetType.None && PlayerTarget == null)
             return false;
         
-        if (Cooldown > 0f)
+        if (Cooldown > 0f && !ignoreCooldown)
             return false;
         
         return CanUse.Invoke(PlayerControl.LocalPlayer);
@@ -245,9 +259,11 @@ public class CustomButton
         public bool InfinitelyUsable;
         public int MaxUses;
         public TargetType _TargetType;
+        public Func<PlayerControl> PlayerTargetSelector;
+        public Color PlayerTargetOutline;
 
         public CustomButtonOptions(float maxCooldown = 0f, bool hasEffect = false, float effectDuration = 0f,
-            Action onEffectEnded = null, bool infinitelyUsable = true, int maxUses = 0, TargetType targetType = TargetType.None)
+            Action onEffectEnded = null, bool infinitelyUsable = true, int maxUses = 0, TargetType targetType = TargetType.None, Func<PlayerControl> playerTargetSelector = null, Color playerTargetOutline = default)
         {
             MaxCooldown = maxCooldown;
             HasEffect = hasEffect;
@@ -256,6 +272,8 @@ public class CustomButton
             InfinitelyUsable = infinitelyUsable;
             MaxUses = maxUses;
             _TargetType = targetType;
+            PlayerTargetSelector = playerTargetSelector;
+            PlayerTargetOutline = playerTargetOutline;
         }
 
         public enum TargetType

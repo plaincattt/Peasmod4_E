@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using AmongUs.GameOptions;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
@@ -18,6 +19,45 @@ public static class Extensions
     public static bool IsLocal(this PlayerControl player)
     {
         return PlayerControl.LocalPlayer.PlayerId == player.PlayerId;
+    }
+
+    public static PlayerControl FindNearestPlayer(this PlayerControl player, Predicate<PlayerControl> selector, float distance = 3f, bool ignoreColliders = false)
+    {
+        var myPos = player.GetTruePosition();
+        
+        var outputList = new List<PlayerControl>();
+        foreach (var target in PlayerControl.AllPlayerControls)
+        {
+            if (selector.Invoke(target))
+            {
+                var vector = target.GetTruePosition() - myPos;
+                var magnitude = vector.magnitude;
+                if (magnitude <= distance && (ignoreColliders || !PhysicsHelpers.AnyNonTriggersBetween(myPos, vector.normalized, magnitude, Constants.ShipAndObjectsMask)))
+                {
+                    outputList.Add(target);
+                }
+            }
+        }
+        
+        outputList.Sort(delegate(PlayerControl a, PlayerControl b)
+        {
+            float magnitude2 = (a.GetTruePosition() - myPos).magnitude;
+            float magnitude3 = (b.GetTruePosition() - myPos).magnitude;
+            if (magnitude2 > magnitude3)
+            {
+                return 1;
+            }
+            if (magnitude2 < magnitude3)
+            {
+                return -1;
+            }
+            return 0;
+        });
+        
+        if (outputList.Count == 0)
+            return null;
+        
+        return outputList.First();
     }
 
     public static string GetTranslation(this StringNames stringName)
