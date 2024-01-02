@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 
 namespace Peasmod4.API.Events;
 
@@ -38,6 +39,19 @@ public class PlayerEventManager
             Killer = killer;
             Victim = victim;
             Flags = flags;
+        }
+    }
+    
+    public static EventHandler<CanPlayerBeMurderedEventArgs> CanPlayerBeMurderedEventHandler;
+    public class CanPlayerBeMurderedEventArgs : CancelEventArgs
+    {
+        public PlayerControl Killer;
+        public PlayerControl Victim;
+
+        public CanPlayerBeMurderedEventArgs(PlayerControl killer, PlayerControl victim)
+        {
+            Killer = killer;
+            Victim = victim;
         }
     }
 }

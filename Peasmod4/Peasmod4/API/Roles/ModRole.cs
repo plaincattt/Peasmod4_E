@@ -9,16 +9,21 @@ public class ModRole : RoleBehaviour
 {
     public override bool IsDead => false;
 
-    public override bool CanUse(IUsable console)
+    public override bool CanUse(IUsable usable)
     {
         var role = PlayerControl.LocalPlayer.GetCustomRole();
         if (role != null && role.CanVent)
         {
             this.CanVent = role.CanVent;
-            return console.TryCast<Vent>() != null;
+            return usable.TryCast<Vent>() != null;
         }
+
+        var console = usable.TryCast<Console>();
         
-        return console.TryCast<Console>() != null;
+        if (!role.HasToDoTasks)
+            return !(console != null) || console.AllowImpostor;
+        
+        return console != null;
     }
 
     public override bool DidWin(GameOverReason gameOverReason)

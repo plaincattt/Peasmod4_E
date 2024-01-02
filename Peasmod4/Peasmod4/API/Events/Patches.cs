@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using System;
+using HarmonyLib;
 
 namespace Peasmod4.API.Events;
 
@@ -62,6 +63,31 @@ public class Patches
     public static void PlayerExiledPatch(PlayerControl __instance)
     {
         PlayerEventManager.PlayerExiledEventHandler?.Invoke(null, new PlayerEventManager.PlayerExiledEventArgs(__instance));
+    }
+    
+    [HarmonyPrefix]
+    [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcMurderPlayer))]
+    public static bool CanPlayerBeMurderedPatch(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl victim)
+    {
+        var result = true;
+        
+        var _event = PlayerEventManager.CanPlayerBeMurderedEventHandler;
+        if (_event != null)
+        {
+            var args = new PlayerEventManager.CanPlayerBeMurderedEventArgs(__instance, victim);
+            foreach (var @delegate in _event.GetInvocationList())
+            {
+                var t = (EventHandler<PlayerEventManager.CanPlayerBeMurderedEventArgs>)@delegate;
+                t(null, args);
+                if (args.Cancel)
+                {
+                    result = false;
+                    break;
+                }
+            }
+        }
+        //PlayerEventManager.CanPlayerBeMurderedEventHandler?.Invoke(null, new PlayerEventManager.PlayerMurderedEventArgs(__instance, victim, flags));
+        return result;
     }
     
     [HarmonyPostfix]

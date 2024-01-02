@@ -261,6 +261,14 @@ public class Patches
         }
 
         var scroller = roleSettingPrefab.gameObject.transform.parent.parent.GetComponent<Scroller>();
+        scroller.OnScrollYEvent += (Action<float>) (value =>
+        {
+            for (int i = 0; i < scroller.Inner.childCount; i++)
+            {
+                var child = scroller.Inner.GetChild(i);
+                child.gameObject.SetActive(child.position.y < 4);
+            }
+        });
         scroller.ContentYBounds.max =
             (CustomOptionManager.CustomRoleOptions.Count + GetAssemblies().Count - 4.5f) * 0.5f;
         scroller.transform.FindChild("UI_Scrollbar").gameObject.SetActive(true);

@@ -46,7 +46,6 @@ public class Zombie : CustomRole
     public override Enums.Visibility Visibility => VisibleToEveryone.Value ? Enums.Visibility.Everyone : Enums.Visibility.Role;
     public override Enums.Team Team => Enums.Team.Role;
     public override bool HasToDoTasks => false;
-    public override int MaxCount => 1;
 
     public CustomButton InfectButton;
     public CustomStringOption Reach;

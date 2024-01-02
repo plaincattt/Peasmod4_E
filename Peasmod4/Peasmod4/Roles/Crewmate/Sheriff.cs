@@ -16,9 +16,11 @@ public class Sheriff : CustomRole
     public Sheriff(Assembly assembly) : base(assembly)
     {
         PlayerEventManager.PlayerMurderedEventHandler += OnPlayerKilled;
+        PlayerEventManager.CanPlayerBeMurderedEventHandler += CanPlayerBeKilled;
 
         CanKillNeutralsOption = new CustomToggleOption("SheriffCanKillNeutrals", "Can kill neutrals", false);
-        RoleOption = new CustomRoleOption(this, true, CanKillNeutralsOption);
+        InnocentVictimDiesAsWellOption = new CustomToggleOption("SheriffInnocentVictimDiesAsWell", "Innocent victim dies as well", true);
+        RoleOption = new CustomRoleOption(this, true, CanKillNeutralsOption, InnocentVictimDiesAsWellOption);
     }
 
     public override string Name => "Sheriff";
@@ -32,6 +34,7 @@ public class Sheriff : CustomRole
 
     public CustomRoleOption RoleOption;
     public CustomToggleOption CanKillNeutralsOption;
+    public CustomToggleOption InnocentVictimDiesAsWellOption;
 
     public override bool CanKill(PlayerControl victim = null) => true;
 
@@ -43,6 +46,21 @@ public class Sheriff : CustomRole
                                                        (args.Victim.GetCustomRole().Team == Enums.Team.Alone ||
                                                         args.Victim.GetCustomRole().Team == Enums.Team.Role))))
                 args.Killer.RpcMurderPlayer(args.Killer, true);
+        }
+    }
+    
+    public void CanPlayerBeKilled(object sender, PlayerEventManager.CanPlayerBeMurderedEventArgs args)
+    {
+        if (args.Killer.IsCustomRole(this) && args.Victim.PlayerId != args.Killer.PlayerId)
+        {
+            if (!(args.Victim.Data.Role.IsImpostor || (CanKillNeutralsOption.Value && args.Victim.IsCustomRole() &&
+                                                       (args.Victim.GetCustomRole().Team == Enums.Team.Alone ||
+                                                        args.Victim.GetCustomRole().Team == Enums.Team.Role))))
+                if (!InnocentVictimDiesAsWellOption.Value)
+                {
+                    args.Cancel = true;
+                    args.Killer.RpcMurderPlayer(args.Killer, true);
+                }
         }
     }
 }

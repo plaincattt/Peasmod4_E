@@ -359,7 +359,7 @@ public class Patches
         if (!role.AssignTasks)
             player.ClearTasks();
 
-        if (!player.Data.Role.IsImpostor && !role.HasToDoTasks && role.AssignTasks)
+        if (!role.HasToDoTasks && role.AssignTasks)
         {
             var fakeTasks = new GameObject("FakeTasks").AddComponent<ImportantTextTask>();
             fakeTasks.transform.SetParent(player.transform, false);
