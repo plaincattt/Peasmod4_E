@@ -4,12 +4,14 @@ using BepInEx.Configuration;
 using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
+using Peasmod4.API;
 using Peasmod4.API.Components;
 using Peasmod4.API.Events;
 using Peasmod4.API.UI.EndGame;
 using Peasmod4.API.UI.Options;
 using Reactor;
 using Reactor.Patches;
+using UnityEngine.SceneManagement;
 
 namespace Peasmod4;
 
@@ -57,6 +59,16 @@ public partial class PeasmodPlugin : BasePlugin
             text.text = versionText;
         };
         #endif
+        
+        SceneManager.add_sceneLoaded((Action<Scene, LoadSceneMode>)((scene, _) =>
+        {
+            if (scene.name == "MainMenu")
+            {
+                CustomRegionManager.AddCustomRegions();
+            }
+        }));
+        
+        CustomRegionManager.AddRegion("Peaspowered", "http://au.peasplayer.xyz", 22023);
 
         ShowRolesToDead = new CustomToggleOption("ShowRolesToDead", "Show roles to dead", true) { AdvancedVanillaOption = true };
         
