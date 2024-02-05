@@ -5,6 +5,7 @@ using Peasmod4.API.Events;
 using Peasmod4.API.Roles;
 using Peasmod4.API.UI.Buttons;
 using Peasmod4.API.UI.Options;
+using Peasmod4.Resources;
 using Peasmod4.Roles.Abilities;
 using Reactor.Networking.Rpc;
 using UnityEngine;
@@ -28,10 +29,10 @@ public class Ninja : CustomRole
     }
 
     public override string Name => "Ninja";
-    public override Sprite Icon => Utility.CreateSprite("Peasmod4.Resources.Buttons.TurnInvisible.png", 794f);
-    public override string Description => "";
+    public override Sprite Icon => ResourceManager.TurnInvisibleButton;
+    public override string Description => "You can go invisible";
     public override string LongDescription => "";
-    public override string TaskText => "";
+    public override string TaskText => "Go invisbile and kill the crewmates secretly";
     public override Color Color => Palette.ImpostorRed;
     public override Enums.Visibility Visibility => Enums.Visibility.Impostor;
     public override Enums.Team Team => Enums.Team.Impostor;

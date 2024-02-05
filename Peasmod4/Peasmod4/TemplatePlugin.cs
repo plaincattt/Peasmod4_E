@@ -9,6 +9,7 @@ using Peasmod4.API.Components;
 using Peasmod4.API.Events;
 using Peasmod4.API.UI.EndGame;
 using Peasmod4.API.UI.Options;
+using Peasmod4.Resources;
 using Reactor;
 using Reactor.Patches;
 using UnityEngine.SceneManagement;
@@ -36,6 +37,7 @@ public partial class PeasmodPlugin : BasePlugin
         Logger = Log;
         ConfigFile = Config;
         
+        ResourceManager.LoadAssets();
         RegisterCustomRoleAttribute.Load();
         RegisterEventListenerAttribute.Load();
     }

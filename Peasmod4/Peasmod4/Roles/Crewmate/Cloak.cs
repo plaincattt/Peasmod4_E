@@ -5,6 +5,7 @@ using Peasmod4.API.Events;
 using Peasmod4.API.Roles;
 using Peasmod4.API.UI.Buttons;
 using Peasmod4.API.UI.Options;
+using Peasmod4.Resources;
 using Peasmod4.Roles.Abilities;
 using Reactor.Networking.Rpc;
 using UnityEngine;
@@ -28,7 +29,7 @@ public class Cloak : CustomRole
     }
 
     public override string Name => "Cloak";
-    public override Sprite Icon => Utility.CreateSprite("Peasmod4.Resources.Buttons.TurnInvisible.png", 794f);
+    public override Sprite Icon => ResourceManager.TurnInvisibleButton;
     public override string Description => "You can go invisible";
     public override string LongDescription => "";
     public override string TaskText => "Go invisible and try to catch the impostor";

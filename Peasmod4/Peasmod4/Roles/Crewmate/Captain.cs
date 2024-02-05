@@ -5,6 +5,7 @@ using Peasmod4.API.Events;
 using Peasmod4.API.Roles;
 using Peasmod4.API.UI.Buttons;
 using Peasmod4.API.UI.Options;
+using Peasmod4.Resources;
 using UnityEngine;
 
 namespace Peasmod4.Roles.Crewmate;
@@ -24,7 +25,7 @@ public class Captain : CustomRole
     }
 
     public override string Name => "Captain";
-    public override Sprite Icon => Utility.CreateSprite("Peasmod4.Resources.Buttons.CallMeeting.png", 650f);
+    public override Sprite Icon => ResourceManager.CallMeetingButton;
     public override string Description => "Keep your crew safe";
     public override string LongDescription => "";
     public override string TaskText => "Keep your crew safe";
