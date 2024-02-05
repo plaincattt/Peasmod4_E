@@ -13,7 +13,9 @@ using UnityEngine;
 namespace Peasmod4.Roles.Neutral;
 
 [HarmonyPatch]
+#if !API
 [RegisterCustomRole]
+#endif
 public class Zombie : CustomRole
 {
     public Zombie(Assembly assembly) : base(assembly)

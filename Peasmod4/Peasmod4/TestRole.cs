@@ -12,7 +12,7 @@ using UnityEngine;
 
 namespace Peasmod4;
 
-#if !API
+#if !API && DEV
 [RegisterCustomRole]
 #endif
 public class TestRole : CustomRole
@@ -124,7 +124,7 @@ public class TestRole : CustomRole
 
     public override bool DidWin(GameOverReason gameOverReason, PlayerControl player, ref bool overrides)
     {
-        return GameManager.Instance.DidHumansWin(gameOverReason) || CustomEndReason.EndReason == gameOverReason;
+        return (GameManager.Instance.DidHumansWin(gameOverReason) || CustomEndReason.EndReason == gameOverReason) && player.IsCustomRole(this);
     }
 
     public override bool CanKill(PlayerControl victim = null)
