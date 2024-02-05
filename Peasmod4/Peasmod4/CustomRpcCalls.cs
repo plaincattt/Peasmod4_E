@@ -2,5 +2,6 @@
 
 public enum CustomRpcCalls : uint
 {
-    TurnInvisible = 30
+    TurnInvisible = 30,
+    SpecialVote = 31
 }
