@@ -12,7 +12,8 @@ public class Patches
     public static void GameStartPatch()
     {
         PeasmodPlugin.Logger.LogInfo("test");
-        //GameEventManager.GameStartEventHandler?.Invoke(null, EventArgs.Empty);
+        if (AmongUsClient.Instance.NetworkMode == NetworkModes.FreePlay)
+            GameEventManager.GameStartEventHandler?.Invoke(null, EventArgs.Empty);
     }
     
     [HarmonyPostfix]

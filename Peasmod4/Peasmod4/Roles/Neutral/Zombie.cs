@@ -59,8 +59,11 @@ public class Zombie : CustomRole
     public CustomEndGameManager.CustomEndReason EndReason;
     public bool MadeWinCall;
 
-    public override void OnRoleAssigned()
+    public override void OnRoleAssigned(PlayerControl player)
     {
+        if (!player.IsLocal())
+            return;
+        
         MadeWinCall = false;
         
         InfectButton = new CustomButton("InfectButton", () =>
@@ -90,8 +93,8 @@ public class Zombie : CustomRole
     {
         if (AmongUsClient.Instance.AmHost && !MadeWinCall)
         {
-            if (PlayerControl.AllPlayerControls.WrapToSystem().FindAll(player => player != null &&
-                    !player.IsCustomRole(this) && !player.Data.IsDead && !player.Data.Role.IsImpostor).Count == 0)
+            if (PlayerControl.AllPlayerControls.WrapToSystem().FindAll(player => player != null && player.Data != null &&
+                    !player.IsCustomRole(this) && !player.Data.IsDead && !player.Data.Role.IsImpostor).Count == 0 && PlayerControl.AllPlayerControls.Count > 1)
             {
                 EndReason.Trigger();
                 MadeWinCall = true;

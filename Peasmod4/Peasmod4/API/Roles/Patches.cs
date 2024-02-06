@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using AmongUs.GameOptions;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
 using HarmonyLib;
 using Il2CppSystem.Collections.Generic;
@@ -78,6 +79,22 @@ public class Patches
             
         //HideButtons(HudManager.Instance, true);
         Rpc<RpcTriggerEvent>.Instance.Send(new RpcTriggerEvent.Data("Start"));
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(RoleManager), nameof(RoleManager.SetRole))]
+    public static void AssignedRolePatch(RoleManager __instance, [HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(1)] RoleTypes role)
+    {
+        var customRole = CustomRoleManager.GetRole(role);
+        if (customRole == null)
+            return;
+        
+        foreach (var playerControl in PlayerControl.AllPlayerControls.WrapToSystem())
+        {
+            PlayerNameColor.Set(playerControl);
+        };
+        ToggleButtons(null, new HudEventManager.HudSetActiveEventArgs(HudManager.Instance, true));
+        customRole.OnRoleAssigned(player);
     }
     
     /*[HarmonyPostfix]

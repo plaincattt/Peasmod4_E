@@ -138,7 +138,7 @@ public abstract class CustomRole
         
     }
 
-    public virtual void OnRoleAssigned() { }
+    public virtual void OnRoleAssigned(PlayerControl player) { }
     
     public CustomRole(Assembly assembly)
     {

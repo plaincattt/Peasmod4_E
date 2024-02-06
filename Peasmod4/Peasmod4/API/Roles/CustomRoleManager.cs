@@ -77,6 +77,11 @@ public class CustomRoleManager
         return (T) Roles.First(role => role.GetType() == typeof(T));
     }
 
+    public static CustomRole GetRole(RoleTypes roleType)
+    {
+        return Roles.Find(role => role.RoleBehaviour.Role == roleType);
+    }
+
     public static List<PlayerControl> GetRoleMembers(CustomRole role)
     {
         return PlayerControl.AllPlayerControls.WrapToSystem().FindAll(player => player.IsCustomRole(role));

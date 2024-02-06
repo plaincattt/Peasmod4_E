@@ -23,8 +23,6 @@ public class Mayor : CustomRole
 {
     public Mayor(Assembly assembly) : base(assembly)
     {
-        GameEventManager.GameStartEventHandler += OnGameStart;
-        
         DoubleVotesAmount = new CustomNumberOption("MayorDoubleVoteAmount", "Double-votes amount", 0f,
             NumberSuffixes.None, 1f, new FloatRange(0, 100), false, true);
         RoleOption = new CustomRoleOption(this, true, DoubleVotesAmount);
@@ -43,9 +41,12 @@ public class Mayor : CustomRole
     public CustomNumberOption DoubleVotesAmount;
 
     public int DoubleVotesLeft;
-    
-    public void OnGameStart(object sender, EventArgs args)
+
+    public override void OnRoleAssigned(PlayerControl player)
     {
+        if (!player.IsLocal())
+            return;
+        
         DoubleVotesLeft = DoubleVotesAmount.Value == 0 ? -1 : (int) DoubleVotesAmount.Value;
     }
 
@@ -97,11 +98,11 @@ public class Mayor : CustomRole
         
         if (!__instance.voteComplete && __instance.Parent.Select(__instance.TargetPlayerId))
         {
-            var voteTwiceButton = __instance.Buttons.transform.FindChild("VoteTwiceButton").gameObject;
+            var voteTwiceButton = __instance.Buttons.transform.FindChild("VoteTwiceButton");
 
             __instance.Buttons.SetActive(true);
             float startPos = __instance.AnimateButtonsFromLeft ? 0.2f : 1.95f;
-            __instance.StartCoroutine(Effects.All(new IEnumerator[]
+            var effects = new System.Collections.Generic.List<IEnumerator>()
             {
                 Effects.Lerp(0.25f, new System.Action<float>(t =>
                 {
@@ -110,18 +111,26 @@ public class Mayor : CustomRole
                 Effects.Lerp(0.35f, new System.Action<float>(t =>
                 {
                     __instance.ConfirmButton.transform.localPosition = Vector2.Lerp(Vector2.right * startPos, Vector2.right * 0.65f, Effects.ExpOut(t));
-                })),
-                Effects.Lerp(0.45f, new System.Action<float>(t =>
+                }))
+            };
+            if (voteTwiceButton != null)
+            {
+                effects.Add(Effects.Lerp(0.45f, new System.Action<float>(t =>
                 {
                     voteTwiceButton.transform.localPosition = Vector2.Lerp(Vector2.right * startPos, Vector2.right * 0f, Effects.ExpOut(t));
-                }))
-            }));
-            System.Collections.Generic.List<UiElement> selectableElements = new System.Collections.Generic.List<UiElement>
+                })));
+            }
+            __instance.StartCoroutine(Effects.All(effects.ToArray()));
+            
+            var selectableElements = new System.Collections.Generic.List<UiElement>
             {
                 __instance.CancelButton,
-                __instance.ConfirmButton,
-                voteTwiceButton.GetComponent<UiElement>()
+                __instance.ConfirmButton
             };
+            if (voteTwiceButton != null)
+            {
+                selectableElements.Add(voteTwiceButton.GetComponent<UiElement>());
+            }
             ControllerManager.Instance.OpenOverlayMenu(__instance.name, __instance.CancelButton, __instance.ConfirmButton, selectableElements.WrapToIl2Cpp(), false);
             return false;
         }
