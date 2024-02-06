@@ -25,7 +25,7 @@ public class RpcSetCustomRole : PlayerCustomRpc<PeasmodPlugin, RpcSetCustomRole.
         }
     }
 
-    public override RpcLocalHandling LocalHandling => RpcLocalHandling.Before;
+    public override RpcLocalHandling LocalHandling => RpcLocalHandling.After;
 
     public override void Write(MessageWriter writer, Data data)
     {

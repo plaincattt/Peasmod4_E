@@ -8,6 +8,11 @@ namespace Peasmod4.API.Roles;
 
 public static class Extensions
 {
+    public static void RpcSetVanillaRole(this PlayerControl player, RoleTypes roleTypes)
+    {
+        Rpc<RpcSetCustomRole>.Instance.Send(new RpcSetCustomRole.Data(player, roleTypes));
+    }
+    
     public static void RpcSetCustomRole(this GameData.PlayerInfo player, CustomRole baseRole) => RpcSetCustomRole(player.Object, baseRole);
 
     public static void RpcSetCustomRole(this PlayerControl player, CustomRole baseRole)
