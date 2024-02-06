@@ -54,4 +54,17 @@ public class PlayerEventManager
             Victim = victim;
         }
     }
+
+    public static EventHandler<PlayerCompletedTaskEventArgs> PlayerCompletedTaskEventHandler;
+    public class PlayerCompletedTaskEventArgs : EventArgs
+    {
+        public PlayerControl Player;
+        public PlayerTask Task;
+
+        public PlayerCompletedTaskEventArgs(PlayerControl player, PlayerTask task)
+        {
+            Player = player;
+            Task = task;
+        }
+    }
 }

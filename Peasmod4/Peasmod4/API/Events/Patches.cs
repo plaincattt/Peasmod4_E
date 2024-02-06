@@ -96,5 +96,13 @@ public class Patches
     {
         PlayerEventManager.PlayerMurderedEventHandler?.Invoke(null, new PlayerEventManager.PlayerMurderedEventArgs(__instance, victim, flags));
     }
+
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(GameData), nameof(GameData.CompleteTask))]
+    public static void PlayerCompleteTaskPatch(GameData __instance, [HarmonyArgument(0)] PlayerControl player,
+        [HarmonyArgument(1)] uint id)
+    {
+        PlayerEventManager.PlayerCompletedTaskEventHandler?.Invoke(null, new PlayerEventManager.PlayerCompletedTaskEventArgs(player, player.myTasks.WrapToSystem().Find(t => t.Id == id)));
+    }
     #endregion
 }
