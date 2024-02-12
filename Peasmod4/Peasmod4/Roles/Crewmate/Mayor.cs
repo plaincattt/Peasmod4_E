@@ -31,7 +31,7 @@ public class Mayor : CustomRole
     public override string Name => "Mayor";
     public override string Description => "Your vote counts twice";
     public override string LongDescription => "";
-    public override string TaskText => "Your vote counts twice. Use it wisely!";
+    public override string TaskHint => "Your vote counts twice. Use it wisely!";
     public override Color Color => new Color(17f / 255f, 49f / 255f, 255f / 255f);
     public override Enums.Visibility Visibility => Enums.Visibility.NoOne;
     public override Enums.Team Team => Enums.Team.Crewmate;

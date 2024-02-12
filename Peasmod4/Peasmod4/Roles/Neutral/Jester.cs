@@ -30,7 +30,7 @@ public class Jester : CustomRole
     public override string Name => "Jester";
     public override string Description => "Trick the crew";
     public override string LongDescription => "";
-    public override string TaskText => "Trick the crew into voting you out";
+    public override string TaskHint => "Trick the crew into voting you out";
     public override Color Color => new Color(136f / 255f, 31f / 255f, 136f / 255f);
     public override Enums.Visibility Visibility => Enums.Visibility.NoOne;
     public override Enums.Team Team => Enums.Team.Alone;

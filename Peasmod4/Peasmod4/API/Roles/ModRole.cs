@@ -37,8 +37,28 @@ public class ModRole : RoleBehaviour
 
     public override void AppendTaskHint(StringBuilder taskStringBuilder)
     {
+        if (BlurbMed.IsNullOrWhiteSpace())
+            return;
+        
+        taskStringBuilder.AppendFormat("\n{0}{1} {2}</color>\n{3}", NameColor.ToTextColor(), NiceName, DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.RoleHint), BlurbMed);
     }
-    
+
+    public override void SpawnTaskHeader(PlayerControl playerControl)
+    {
+        if (!playerControl.IsLocal())
+            return;
+        
+        var importantTask = PlayerTask.GetOrCreateTask<ImportantTextTask>(playerControl, 0);
+        importantTask.Text = string.Concat(new string[]
+        {
+            NameColor.ToTextColor(),
+            BlurbMed,
+            "\r\n",
+            TasksCountTowardProgress ? "" : DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.FakeTasks),
+            "</color>"
+        });
+    }
+
     public override PlayerControl FindClosestTarget()
     {
         if (PlayerControl.LocalPlayer.IsCustomRole())

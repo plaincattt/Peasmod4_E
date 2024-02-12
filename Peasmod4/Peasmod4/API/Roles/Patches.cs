@@ -86,15 +86,16 @@ public class Patches
     public static void AssignedRolePatch(RoleManager __instance, [HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(1)] RoleTypes role)
     {
         var customRole = CustomRoleManager.GetRole(role);
-        if (customRole == null)
-            return;
+        if (customRole != null)
+        {
+            ToggleButtons(null, new HudEventManager.HudSetActiveEventArgs(HudManager.Instance, true));
+            customRole.OnRoleAssigned(player);
+        }
         
         foreach (var playerControl in PlayerControl.AllPlayerControls.WrapToSystem())
         {
             PlayerNameColor.Set(playerControl);
-        };
-        ToggleButtons(null, new HudEventManager.HudSetActiveEventArgs(HudManager.Instance, true));
-        customRole.OnRoleAssigned(player);
+        }
     }
     
     /*[HarmonyPostfix]
@@ -171,7 +172,10 @@ public class Patches
     public static void ShowRoleNamePatch([HarmonyArgument(0)] PlayerControl player)
     {
         if (!player.IsVisibleTo(PlayerControl.LocalPlayer))
+        {
             player.cosmetics.SetNameColor(Color.white);
+            player.cosmetics.nameText.text = player.name;
+        }
         else
             player.SetNameFromRole();
     }
@@ -218,7 +222,7 @@ public class Patches
             var role = PlayerControl.LocalPlayer.GetCustomRole();
             
             __instance.tasksString.AppendFormat("\n\n<color=#{0}>{1} {2}</color>\n{3}", role.Color.ToHtmlStringRGBA(), role.Name,
-                DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.RoleHint), role.TaskText);
+                DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.RoleHint), role.TaskHint);
             __instance.tasksString.TrimEnd();
             __instance.TaskPanel.SetTaskText(__instance.tasksString.ToString());
         }
@@ -355,42 +359,6 @@ public class Patches
         __instance.isKilling = true;
         __instance.RpcMurderPlayer(target, true);
         return false;
-    }
-
-    [HarmonyPostfix]
-    [HarmonyPatch(typeof(PlayerControl._CoSetTasks_d__126), nameof(PlayerControl._CoSetTasks_d__126.MoveNext))]
-    public static void AssignTasksPatch(PlayerControl._CoSetTasks_d__126 __instance)
-    {
-        if (__instance == null)
-            return;
-
-        var player = __instance.__4__this;
-        var role = player.GetCustomRole();
-
-        if (role == null)
-            return;
-
-        if (player.PlayerId != PlayerControl.LocalPlayer.PlayerId)
-            return;
-
-        if (!role.AssignTasks)
-            player.ClearTasks();
-
-        if (!role.HasToDoTasks && role.AssignTasks)
-        {
-            var fakeTasks = new GameObject("FakeTasks").AddComponent<ImportantTextTask>();
-            fakeTasks.transform.SetParent(player.transform, false);
-            fakeTasks.Text = $"</color>{role.Color.GetTextColor()}Fake Tasks:</color>";
-            player.myTasks.Insert(0, fakeTasks);
-        }
-
-        if (role.TaskText == null && role.Description == null)
-            return;
-        
-        var roleTask = new GameObject(role.Name + "Task").AddComponent<ImportantTextTask>();
-        roleTask.transform.SetParent(player.transform, false);
-        roleTask.Text = $"</color>Role: {role.Color.GetTextColor()}{role.Name}\n{role.TaskText ?? role.Description}</color>\n";
-        player.myTasks.Insert(0, roleTask);
     }
 
     [RegisterEventListener(EventType.PlayerDied)]

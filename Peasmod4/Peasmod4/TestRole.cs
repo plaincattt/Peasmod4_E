@@ -20,7 +20,7 @@ public class TestRole : CustomRole
     public override string Name => "Peasplayer";
     public override string Description => "Incredible Person";
     public override string LongDescription => "An incredible Person that is currently rewriting Peasmod";
-    public override string TaskText => LongDescription;
+    public override string TaskHint => LongDescription;
     public override Color Color => Color.green;
     public override Enums.Visibility Visibility => Enums.Visibility.Everyone;
     public override Enums.Team Team => Enums.Team.Crewmate;

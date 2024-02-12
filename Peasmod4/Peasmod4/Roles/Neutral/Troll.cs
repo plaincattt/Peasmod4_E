@@ -27,7 +27,7 @@ public class Troll : CustomRole
     public override string Name => "Troll";
     public override string Description => "Get killed";
     public override string LongDescription => "";
-    public override string TaskText => "Get killed";
+    public override string TaskHint => "Get killed";
     public override Color Color => Palette.AcceptedGreen;
     public override Enums.Visibility Visibility => Enums.Visibility.NoOne;
     public override Enums.Team Team => Enums.Team.Alone;

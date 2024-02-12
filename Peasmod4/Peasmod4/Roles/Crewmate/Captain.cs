@@ -28,7 +28,7 @@ public class Captain : CustomRole
     public override Sprite Icon => ResourceManager.CallMeetingButton;
     public override string Description => "Keep your crew safe";
     public override string LongDescription => "";
-    public override string TaskText => "Keep your crew safe";
+    public override string TaskHint => "Keep your crew safe";
     public override Color Color => Palette.LightBlue;
     public override Enums.Visibility Visibility => Enums.Visibility.NoOne;
     public override Enums.Team Team => Enums.Team.Crewmate;

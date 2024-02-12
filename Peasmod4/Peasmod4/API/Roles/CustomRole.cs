@@ -30,7 +30,7 @@ public abstract class CustomRole
     /// <summary>
     /// The description of the Role at the task list
     /// </summary>
-    public abstract string TaskText { get; }
+    public virtual string TaskHint { get; }
 
     /// <summary>
     /// The color of the Role. Will displayed at the intro, name, task list, game end
@@ -63,11 +63,6 @@ public abstract class CustomRole
             }
         }
     }
-
-    /// <summary>
-    /// Whether the player should get tasks
-    /// </summary>
-    public virtual bool AssignTasks { get; set; } = true;
         
     public abstract bool HasToDoTasks { get; }
 

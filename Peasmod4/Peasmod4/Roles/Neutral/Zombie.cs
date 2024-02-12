@@ -42,7 +42,7 @@ public class Zombie : CustomRole
     public override string LongDescription =>
         "Spread the zombie disease to every other crewmate and turn them into zombies too but watch out! You can't infect impostors because they already have a different disease";
 
-    public override string TaskText => "Infect every crewmate";
+    public override string TaskHint => "Infect every crewmate";
     public override Color Color => ZombieColor;
     public readonly Color ZombieColor = new Color(109 / 255f, 142 / 255f, 74 / 255f);
     public override Enums.Visibility Visibility => VisibleToEveryone.Value ? Enums.Visibility.Everyone : Enums.Visibility.Role;

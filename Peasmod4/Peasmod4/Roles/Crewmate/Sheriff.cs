@@ -26,7 +26,7 @@ public class Sheriff : CustomRole
     public override string Name => "Sheriff";
     public override string Description => "Execute the bad guys";
     public override string LongDescription => "";
-    public override string TaskText => Description;
+    public override string TaskHint => Description;
     public override Color Color => new Color(255f / 255f, 114f / 255f, 0f / 255f);
     public override Enums.Visibility Visibility => Enums.Visibility.NoOne;
     public override Enums.Team Team => Enums.Team.Crewmate;

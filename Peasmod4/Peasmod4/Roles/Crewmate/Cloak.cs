@@ -32,7 +32,7 @@ public class Cloak : CustomRole
     public override Sprite Icon => ResourceManager.TurnInvisibleButton;
     public override string Description => "You can go invisible";
     public override string LongDescription => "";
-    public override string TaskText => "Go invisible and try to catch the impostor";
+    public override string TaskHint => "Go invisible and try to catch the impostor";
     public override Color Color => Color.gray;
     public override Enums.Visibility Visibility => Enums.Visibility.NoOne;
     public override Enums.Team Team => Enums.Team.Crewmate;

@@ -32,7 +32,7 @@ public class Ninja : CustomRole
     public override Sprite Icon => ResourceManager.TurnInvisibleButton;
     public override string Description => "You can go invisible";
     public override string LongDescription => "";
-    public override string TaskText => "Go invisbile and kill the crewmates secretly";
+    public override string TaskHint => "Go invisbile and kill the crewmates secretly";
     public override Color Color => Palette.ImpostorRed;
     public override Enums.Visibility Visibility => Enums.Visibility.Impostor;
     public override Enums.Team Team => Enums.Team.Impostor;
