@@ -1,5 +1,7 @@
-﻿using HarmonyLib;
+﻿using System.Collections.Generic;
+using HarmonyLib;
 using Peasmod4.API.Roles;
+using TMPro;
 using UnityEngine;
 
 namespace Peasmod4.API.UI.EndGame;
@@ -7,6 +9,20 @@ namespace Peasmod4.API.UI.EndGame;
 [HarmonyPatch]
 public class Patches
 {
+    public static Dictionary<string, string> TempRoleRevealText = new ();
+
+    [HarmonyPrefix]
+    [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnGameEnd))]
+    public static void SetRoleRevealTextPatch(AmongUsClient __instance)
+    {
+        TempRoleRevealText.Clear();
+        foreach (var player in PlayerControl.AllPlayerControls)
+        {
+            var role = player.Data.Role;
+            TempRoleRevealText.Add(player.name, role.NameColor.ToTextColor() + role.NiceName + "</color>");
+        }
+    }
+    
     [HarmonyPostfix]
     [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnGameEnd))]
     public static void ReplaceWinnersPatch(AmongUsClient __instance, [HarmonyArgument(0)] EndGameResult endGameResult)
@@ -72,6 +88,39 @@ public class Patches
                 __instance.BackgroundBar.material.SetColor("_Color", endReason.Color.Value);
                 reasonText.color = endReason.Color.Value;
             }
+        }
+
+        var roleTextObject = new GameObject("RoleRevealText");
+        roleTextObject.layer = LayerMask.NameToLayer("UI");
+        
+        var aspectPos = roleTextObject.AddComponent<AspectPosition>();
+        aspectPos.Alignment = AspectPosition.EdgeAlignments.Left;
+        aspectPos.DistanceFromEdge = new Vector3(10.2f, -2.05f, -13f);
+        aspectPos.updateAlways = true;
+
+        var scroller = roleTextObject.AddComponent<Scroller>();
+        scroller.allowX = false;
+        scroller.allowY = true;
+        scroller.transform.localScale = Vector3.one;
+        scroller.active = true;
+        scroller.velocity = new Vector2(0, 0);
+        scroller.ContentYBounds = new FloatRange(0, (TempRoleRevealText.Count - 12) * (0.25f));
+        scroller.enabled = true;
+
+        var inner = new GameObject("Inner");
+        inner.transform.parent = roleTextObject.transform;
+        inner.transform.localPosition = new Vector3(0f, 0f);
+        scroller.Inner = inner.transform;
+
+        var textChild = new GameObject("RoleText");
+        textChild.transform.parent = inner.transform;
+        
+        var roleText = textChild.AddComponent<TextMeshPro>();
+        roleText.fontSize = 2f;
+        roleText.lineSpacing = -20f;
+        foreach (var keyValuePair in TempRoleRevealText)
+        {
+            roleText.text += keyValuePair.Key + (TempData.winners.WrapToSystem().Find(data => data.PlayerName == keyValuePair.Key) == null ? "" : "\u2605") + ": " + keyValuePair.Value + "\n";
         }
     }
 
