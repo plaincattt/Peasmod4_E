@@ -52,7 +52,13 @@ public class Patches
         }
         
         var roles = CustomRoleManager.Roles;
-        roles.Sort((role1, role2) => role1.Chance - role2.Chance);
+        roles.Sort((role1, role2) =>
+        {
+            var difference = role2.Chance - role1.Chance;
+            if (difference == 0)
+                difference = Random.Shared.Next(-1, 2);
+            return difference;
+        });
         foreach (var role in roles)
         {
             for (int i = 0; i < role.Count; i++)
