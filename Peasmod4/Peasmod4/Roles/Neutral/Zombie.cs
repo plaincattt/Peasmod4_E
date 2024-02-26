@@ -81,7 +81,7 @@ public class Zombie : CustomRole
             }, "Infect",
             Utility.CreateSprite("Peasmod4.Placeholder.png", 128f), player => player.IsCustomRole(this),
             player => player.IsCustomRole(this), new CustomButton.CustomButtonOptions(InfectCooldown.Value, targetType: CustomButton.CustomButtonOptions.TargetType.Player, 
-                playerTargetSelector: () => PlayerControl.LocalPlayer.FindNearestPlayer(player => !player.IsCustomRole(this) && !player.Data.IsDead, Reach.Value + 1), playerTargetOutline: ZombieColor));
+                playerTargetSelector: () => PlayerControl.LocalPlayer.FindNearestPlayer(player => !player.IsCustomRole(this) && !player.Data.IsDead, Reach.Value + 1), targetOutline: ZombieColor));
         
         if (PlayerControl.LocalPlayer.IsCustomRole(this))
         {

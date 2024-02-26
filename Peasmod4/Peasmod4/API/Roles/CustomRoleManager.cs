@@ -28,8 +28,7 @@ public class CustomRoleManager
         role.StringName = CustomStringName.CreateAndRegister(customRole.Name);
         role.BlurbName = CustomStringName.CreateAndRegister(customRole.Description);
         role.BlurbNameLong = CustomStringName.CreateAndRegister(customRole.LongDescription);
-        if (!customRole.TaskHint.IsNullOrWhiteSpace())
-            role.BlurbNameMed = CustomStringName.CreateAndRegister(customRole.TaskHint);
+        role.BlurbNameMed = CustomStringName.CreateAndRegister(customRole.TaskHint ?? "");
         role.Role = (RoleTypes) (8 + customRole.Id);
         role.NameColor = customRole.Color;
             

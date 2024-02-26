@@ -52,9 +52,9 @@ public class ModRole : RoleBehaviour
         importantTask.Text = string.Concat(new string[]
         {
             NameColor.ToTextColor(),
-            BlurbMed,
-            "\r\n",
-            TasksCountTowardProgress ? "" : DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.FakeTasks),
+            Blurb,
+            "\r",
+            TasksCountTowardProgress ? "" : "\n" + DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.FakeTasks),
             "</color>"
         });
     }

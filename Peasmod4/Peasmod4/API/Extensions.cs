@@ -60,6 +60,30 @@ public static class Extensions
         return outputList.First();
     }
 
+    public static GameObject FindNearestObject(this PlayerControl player, Predicate<GameObject> selector,
+        float distance = 3f, bool ignoreColliders = false)
+    {
+        GameObject result = null;
+        var biggestDistance = distance;
+        var myPos = player.GetTruePosition();
+        foreach (var collider in Physics2D.OverlapCircleAll(myPos, biggestDistance))
+        {
+            var obj = collider.gameObject;
+            if ((obj.GetComponent<SpriteRenderer>() != null || obj.GetComponentInChildren<SpriteRenderer>() != null) && selector.Invoke(obj))
+            {
+                Vector2 vector = new Vector2(obj.transform.position.x, obj.transform.position.y) - myPos;
+                float magnitude = vector.magnitude;
+                if (magnitude <= biggestDistance && (ignoreColliders || !PhysicsHelpers.AnyNonTriggersBetween(myPos, vector.normalized, magnitude, Constants.ShipAndObjectsMask)))
+                {
+                    result = obj;
+                    biggestDistance = magnitude;
+                }
+            }
+        }
+
+        return result;
+    }
+
     public static string GetTranslation(this StringNames stringName)
     {
         return TranslationController.Instance.GetString(stringName);

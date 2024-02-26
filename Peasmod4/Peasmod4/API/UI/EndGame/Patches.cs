@@ -120,7 +120,7 @@ public class Patches
         roleText.lineSpacing = -20f;
         foreach (var keyValuePair in TempRoleRevealText)
         {
-            roleText.text += keyValuePair.Key + (TempData.winners.WrapToSystem().Find(data => data.PlayerName == keyValuePair.Key) == null ? "" : "\u2605") + ": " + keyValuePair.Value + "\n";
+            roleText.text += keyValuePair.Key + (TempData.winners.WrapToSystem().Find(data => data.PlayerName == keyValuePair.Key) == null ? "" : " (\u2605)") + ": " + keyValuePair.Value + "\n";
         }
     }
 

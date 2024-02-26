@@ -21,6 +21,7 @@ public class CustomButton
     public float Cooldown { get; private set; }
     public int UsesLeft { get; private set; }
     public PlayerControl PlayerTarget;
+    public GameObject ObjectTarget;
     public bool Enabled = true;
 
     public bool IsEffectActive { get; private set; }
@@ -92,6 +93,9 @@ public class CustomButton
                 OnClick();
                 Cooldown = Options.MaxCooldown;
 
+                PlayerTarget = null;
+                ObjectTarget = null;
+                
                 if (!Options.InfinitelyUsable)
                 {
                     UsesLeft--;
@@ -129,12 +133,48 @@ public class CustomButton
                 var newTarget = Options.PlayerTargetSelector.Invoke();
                 if (PlayerTarget && PlayerTarget != newTarget)
                 {
-                    PlayerTarget.cosmetics.SetOutline(false, new Il2CppSystem.Nullable<Color>(Options.PlayerTargetOutline));
+                    PlayerTarget.cosmetics.SetOutline(false, new Il2CppSystem.Nullable<Color>(Options.TargetOutline));
                 }
+                
                 PlayerTarget = newTarget;
+                
                 if (PlayerTarget)
                 {
-                    newTarget.cosmetics.SetOutline(true, new Il2CppSystem.Nullable<Color>(Options.PlayerTargetOutline));
+                    newTarget.cosmetics.SetOutline(true, new Il2CppSystem.Nullable<Color>(Options.TargetOutline));
+                }
+            }
+            else if (Options._TargetType == CustomButtonOptions.TargetType.Object)
+            {
+                var newTarget = Options.ObjectTargetSelector.Invoke();
+                if (ObjectTarget && ObjectTarget != newTarget)
+                {
+                    var image = ObjectTarget.GetComponent<SpriteRenderer>();
+                    if (!image && ObjectTarget.transform.FindChild("Sprite") != null)
+                        image = ObjectTarget.transform.FindChild("Sprite").GetComponent<SpriteRenderer>();
+                    if (!image)
+                        image = ObjectTarget.GetComponentInChildren<SpriteRenderer>();
+                    
+                    if (image)
+                    {
+                        image.material.SetFloat("_Outline", 0);
+                    }
+                }
+                
+                ObjectTarget = newTarget;
+
+                if (ObjectTarget)
+                {
+                    var image = ObjectTarget.GetComponent<SpriteRenderer>();
+                    if (!image && ObjectTarget.transform.FindChild("Sprite") != null)
+                        image = ObjectTarget.transform.FindChild("Sprite").GetComponent<SpriteRenderer>();
+                    if (!image)
+                        image = ObjectTarget.GetComponentInChildren<SpriteRenderer>();
+                    
+                    if (image)
+                    {
+                        image.material.SetFloat("_Outline", 1);
+                        image.material.SetColor("_OutlineColor", Options.TargetOutline);
+                    }
                 }
             }
             
@@ -196,7 +236,10 @@ public class CustomButton
         if (!Options.InfinitelyUsable && UsesLeft <= 0)
             return false;
         
-        if (Options._TargetType != CustomButtonOptions.TargetType.None && PlayerTarget == null)
+        if (Options._TargetType == CustomButtonOptions.TargetType.Player && PlayerTarget == null)
+            return false;
+        
+        if (Options._TargetType == CustomButtonOptions.TargetType.Object && ObjectTarget == null)
             return false;
         
         if (Cooldown > 0f && !ignoreCooldown)
@@ -259,11 +302,12 @@ public class CustomButton
         public bool InfinitelyUsable;
         public int MaxUses;
         public TargetType _TargetType;
+        public Color TargetOutline;
         public Func<PlayerControl> PlayerTargetSelector;
-        public Color PlayerTargetOutline;
+        public Func<GameObject> ObjectTargetSelector;
 
         public CustomButtonOptions(float maxCooldown = 0f, bool hasEffect = false, float effectDuration = 0f,
-            Action onEffectEnded = null, bool infinitelyUsable = true, int maxUses = 0, TargetType targetType = TargetType.None, Func<PlayerControl> playerTargetSelector = null, Color playerTargetOutline = default)
+            Action onEffectEnded = null, bool infinitelyUsable = true, int maxUses = 0, TargetType targetType = TargetType.None, Color targetOutline = default, Func<PlayerControl> playerTargetSelector = null, Func<GameObject> objectTargetSelector = null)
         {
             MaxCooldown = maxCooldown;
             HasEffect = hasEffect;
@@ -272,14 +316,16 @@ public class CustomButton
             InfinitelyUsable = infinitelyUsable;
             MaxUses = maxUses;
             _TargetType = targetType;
+            TargetOutline = targetOutline;
             PlayerTargetSelector = playerTargetSelector;
-            PlayerTargetOutline = playerTargetOutline;
+            ObjectTargetSelector = objectTargetSelector;
         }
 
         public enum TargetType
         {
             None,
-            Player
+            Player,
+            Object
         }
     }
 }
