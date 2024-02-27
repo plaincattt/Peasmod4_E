@@ -59,6 +59,9 @@ public static class Extensions
 
     public static bool IsVisibleTo(this PlayerControl source, PlayerControl otherPlayer)
     {
+        if (otherPlayer == null || source == null || otherPlayer.Data == null || source.Data == null)
+            return false;
+        
         if (otherPlayer.Data.IsDead && PeasmodPlugin.ShowRolesToDead.Value)
             return true;
         

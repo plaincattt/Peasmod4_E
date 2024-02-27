@@ -218,6 +218,9 @@ public class Patches
                     case CustomStringOption customOption:
                         Rpc<RpcUpdateSetting>.Instance.SendTo(client.Id, new RpcUpdateSetting.Data(option, customOption.Value));
                         break;
+                    case CustomRoleOption customOption:
+                        Rpc<RpcUpdateSetting>.Instance.SendTo(client.Id, new RpcUpdateSetting.Data(option, customOption.Count, customOption.Chance));
+                        break;
                 }
             }
         }

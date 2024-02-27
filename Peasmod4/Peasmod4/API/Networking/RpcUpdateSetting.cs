@@ -17,11 +17,13 @@ namespace Peasmod4.API.Networking;
         {
             public readonly CustomOption Option;
             public readonly object Value;
+            public readonly object Value2;
 
-            public Data(CustomOption option, object value)
+            public Data(CustomOption option, object value, object value2 = null)
             {
                 Option = option;
                 Value = value;
+                Value2 = value2;
             }
         }
 
@@ -42,14 +44,24 @@ namespace Peasmod4.API.Networking;
                 case CustomStringOption:
                     writer.Write((int) data.Value);
                     break;
+                case CustomRoleOption:
+                    writer.Write((int) data.Value);
+                    writer.Write((int) data.Value2);
+                    break;
             }
         }
 
         public override Data Read(MessageReader reader)
         {
             var id = reader.ReadString();
-            var option = CustomOptionManager.CustomOptions.Find(_option => _option.Id == id);
+            var option = CustomOptionManager.CustomOptions.Find(_option => _option.Id == id) ??
+                         CustomOptionManager.CustomRoleOptions.Find(_option => _option.Id == id);
+            if (option == null)
+            {
+                PeasmodPlugin.Logger.LogError("RpcUpdateSetting: Didn't find option with that id");
+            }
             object value = null;
+            object value2 = null;
             
             switch (option)
             {
@@ -62,9 +74,13 @@ namespace Peasmod4.API.Networking;
                 case CustomStringOption:
                     value = reader.ReadInt32();
                     break;
+                case CustomRoleOption:
+                    value = reader.ReadInt32();
+                    value2 = reader.ReadInt32();
+                    break;
             }
             
-            return new Data(option, value);
+            return new Data(option, value, value2);
         }
 
         public override void Handle(PlayerControl innerNetObject, Data data)
@@ -79,6 +95,9 @@ namespace Peasmod4.API.Networking;
                     break;
                 case CustomStringOption option:
                     option.SetValue((int) data.Value);
+                    break;
+                case CustomRoleOption option:
+                    option.SetValue((int) data.Value, (int) data.Value2);
                     break;
             }
         }

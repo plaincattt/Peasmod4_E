@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using BepInEx.Configuration;
+using Peasmod4.API.Networking;
 using Peasmod4.API.Roles;
+using Reactor.Networking.Rpc;
 using Reactor.Utilities.Extensions;
 using TMPro;
 using UnityEngine;
@@ -198,14 +200,21 @@ public class CustomRoleOption : CustomOption
     {
         OnValueChanged?.Invoke(new CustomRoleOptionValueChangedArgs(this, Count, maxCount, Chance, chance));
         
-        RoleOption.RoleMaxCount = Count = maxCount;
-        RoleOption.RoleChance = Chance = chance;
+        Count = maxCount;
+        Chance = chance;
 
         if (_countConfigEntry != null && AmongUsClient.Instance.AmHost)
             _countConfigEntry.Value = Count;
         if (_chanceConfigEntry != null && AmongUsClient.Instance.AmHost)
             _chanceConfigEntry.Value = Chance;
 
+        if (AmongUsClient.Instance.AmHost)
+        {
+            RoleOption.RoleMaxCount = maxCount;
+            RoleOption.RoleChance = chance;
+            Rpc<RpcUpdateSetting>.Instance.Send(new RpcUpdateSetting.Data(this, maxCount, chance));
+        }
+        
         if (AdjustRoleSettings)
         {
             Role.Count = Count;
