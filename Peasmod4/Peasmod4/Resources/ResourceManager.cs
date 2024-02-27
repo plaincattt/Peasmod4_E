@@ -18,7 +18,7 @@ public class ResourceManager
         TurnInvisibleButton = Utility.CreateSprite("Peasmod4.Resources.Buttons.TurnInvisible.png", 794f);
         VoteTwiceButton = Utility.CreateSprite("Peasmod4.Resources.Buttons.VoteTwice.png", 100f);
         BuildVentButton = Utility.CreateSprite("Peasmod4.Resources.Buttons.BuildVent.png", 552f);
-        RevivePlayerButton = Utility.CreateSprite("Peasmod4.Resources.Buttons.Revive.png", 803f);
+        RevivePlayerButton = Utility.CreateSprite("Peasmod4.Resources.Buttons.Revive.png", 550f);
         DragBodyButton = Utility.CreateSprite("Peasmod4.Resources.Buttons.DragBody.png", 550f);
         DropBodyButton = Utility.CreateSprite("Peasmod4.Resources.Buttons.DropBody.png", 550f);
     }

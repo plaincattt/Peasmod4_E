@@ -17,6 +17,7 @@ public class Patches
         PeasmodPlugin.Logger.LogInfo("Test");
         var buttonsParent = HudManager.Instance.gameObject.transform.FindChild("Buttons");
         LeftBottomParent = GameObject.Instantiate(buttonsParent.FindChild("BottomRight").gameObject, buttonsParent);
+        LeftBottomParent.name = "BottomLeft";
         LeftBottomParent.transform.DestroyChildren();
         
         var aspectPos = LeftBottomParent.GetComponent<AspectPosition>();

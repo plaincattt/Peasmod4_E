@@ -63,7 +63,7 @@ public class Jinx : CustomRole
     public void OnUpdate(object sender, HudEventManager.HudUpdateEventArgs args)
     {
         if (PlayerControl.AllPlayerControls.WrapToSystem().Count(p => !p.Data.IsDead && !p.Data.Disconnected) == 3 &&
-            PlayerControl.AllPlayerControls.WrapToSystem().Count(p => !p.Data.IsDead && !p.Data.Disconnected && p.Data.Role.IsImpostor) >=
+            PlayerControl.AllPlayerControls.WrapToSystem().Count(p => !p.Data.IsDead && !p.Data.Disconnected && p.Data.Role != null && p.Data.Role.IsImpostor) >=
             1 &&
             PlayerControl.LocalPlayer.IsCustomRole(this) && !PlayerControl.LocalPlayer.Data.IsDead && !MadeWinCall)
         {

@@ -48,7 +48,7 @@ public class Doctor : CustomRole
             var player = body.ParentId.GetPlayer();
             player.RpcRevive();
             player.NetTransform.RpcSnapTo(body.TruePosition);
-            ReviveButton.ObjectTarget.Destroy();
+            //ReviveButton.ObjectTarget.Destroy();
         }, "Revive", ResourceManager.RevivePlayerButton, player => player.IsCustomRole(this) && !player.Data
             .IsDead, _ => true, new CustomButton.CustomButtonOptions(targetType: CustomButton.CustomButtonOptions.TargetType.Object, objectTargetSelector:
             () => PlayerControl.LocalPlayer.FindNearestObject(obj => obj.GetComponent<DeadBody>(), 1f), targetOutline: Color, maxCooldown: ReviveCooldown.Value));

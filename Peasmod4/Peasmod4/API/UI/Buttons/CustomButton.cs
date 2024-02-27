@@ -66,6 +66,7 @@ public class CustomButton
         Button.gameObject.name = ObjectName + "-CustomButton";
         Button.buttonLabelText.GetComponent<TextTranslatorTMP>().Destroy();
         Button.buttonLabelText.text = Text;
+        Button.buttonLabelText.fontSharedMaterial = HudManager.Instance.ReportButton.buttonLabelText.fontSharedMaterial;
         Button.graphic.sprite = Image;
         
         Cooldown = Options.MaxCooldown;
