@@ -35,7 +35,7 @@ public class Jester : CustomRole
     public override Enums.Visibility Visibility => Enums.Visibility.NoOne;
     public override Enums.Team Team => Enums.Team.Alone;
     public override bool HasToDoTasks => false;
-    public override bool CanVent => CanVentOption != null && CanVentOption.Value;
+    public override bool CanVent() => CanVentOption != null && CanVentOption.Value;
 
     public CustomRoleOption RoleOption;
     public CustomToggleOption CanVentOption;

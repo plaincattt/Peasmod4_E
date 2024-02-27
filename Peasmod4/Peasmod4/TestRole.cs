@@ -25,7 +25,7 @@ public class TestRole : CustomRole
     public override Enums.Visibility Visibility => Enums.Visibility.Everyone;
     public override Enums.Team Team => Enums.Team.Crewmate;
     public override bool HasToDoTasks => true;
-    public override bool CanVent => true;
+    public override bool CanVent() => true;
 
     public CustomButton Button;
     public CustomToggleOption TestOption = new CustomToggleOption("TestOption", "Test123", false);
@@ -44,9 +44,9 @@ public class TestRole : CustomRole
         Button = new CustomButton("Peasplayer", () =>
             {
                 PeasmodPlugin.Logger.LogInfo("test");
-                //CustomEndReason.Trigger();
-                Rpc<TurnInvisible.RpcTurnInvisible>.Instance.Send(new TurnInvisible.RpcTurnInvisible.Data(PlayerControl.LocalPlayer, test));
-                test = !test;
+                CustomEndReason.Trigger();
+                //Rpc<TurnInvisible.RpcTurnInvisible>.Instance.Send(new TurnInvisible.RpcTurnInvisible.Data(PlayerControl.LocalPlayer, test));
+                //test = !test;
                 /*var player = PlayerControl.LocalPlayer;
                 GameData.PlayerInfo data = player.Data;
                 //GameManager.Instance.RpcEndGame(GameOverReason.HumansDisconnect, false);
@@ -108,7 +108,7 @@ public class TestRole : CustomRole
                     }
                 }
                 PeasmodPlugin.Logger.LogInfo("test8: " + (usable == null));
-                //Rpc<RpcEndGame>.Instance.Send(new RpcEndGame.Data((GameOverReason) 15));*/
+                */
             }, "Hallo", Utility.CreateSprite("Peasmod4.Placeholder.png", 128f), 
             player => player.IsCustomRole(this), player => player.IsCustomRole(this), new CustomButton.CustomButtonOptions(maxCooldown: 0f, true, 3f,
                 () =>

@@ -326,7 +326,7 @@ public class Patches
         if (customRole != null)
         {
             args.Hud.AbilityButton.gameObject.SetActive(false);
-            args.Hud.ImpostorVentButton.gameObject.SetActive(customRole.CanVent && args.Active);
+            args.Hud.ImpostorVentButton.gameObject.SetActive(customRole.CanVent() && args.Active);
             args.Hud.KillButton.gameObject.SetActive(customRole.CanKill() && args.Active);
         }
     }

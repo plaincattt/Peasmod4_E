@@ -40,7 +40,6 @@ public class EvilBuilder : CustomRole
     public override Enums.Visibility Visibility => Enums.Visibility.Impostor;
     public override Enums.Team Team => Enums.Team.Impostor;
     public override bool HasToDoTasks => false;
-    public override bool CanVent => true;
 
     public void OnGameStart(object sender, EventArgs args)
     {

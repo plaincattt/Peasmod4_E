@@ -81,15 +81,12 @@ public abstract class CustomRole
     /// <summary>
     /// If a member of the role should be able to kill that player / in general
     /// </summary>
-    public virtual bool CanKill(PlayerControl victim = null)
-    {
-        return Team == Enums.Team.Impostor;
-    }
+    public virtual bool CanKill(PlayerControl victim = null) => Team == Enums.Team.Impostor;
 
     /// <summary>
     /// If a member of the role should be able to use vents
     /// </summary>
-    public virtual bool CanVent { get; } = false;
+    public virtual bool CanVent() => Team == Enums.Team.Impostor;
 
     public bool IsVisibleTo(PlayerControl playerWithRole, PlayerControl perspective)
     {

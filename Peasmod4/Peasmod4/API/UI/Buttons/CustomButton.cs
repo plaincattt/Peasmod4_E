@@ -23,16 +23,14 @@ public class CustomButton
     public PlayerControl PlayerTarget;
     public GameObject ObjectTarget;
     public bool Enabled = true;
+    public bool Visible = true;
 
     public bool IsEffectActive { get; private set; }
     public bool IsHudActive { get; private set; } = true;
 
     private bool _hasBeenCreated;
 
-    public CustomButton(string objectName, Action onClick, string text, Sprite image, Predicate<PlayerControl> couldUse,
-        Predicate<PlayerControl> canUse) => new CustomButton(objectName, onClick, text, image, couldUse, canUse, new CustomButtonOptions());
-    
-    public CustomButton(string objectName, Action onClick, string text, Sprite image, Predicate<PlayerControl> couldUse, Predicate<PlayerControl> canUse, CustomButtonOptions options)
+    public CustomButton(string objectName, Action onClick, string text, Sprite image, Predicate<PlayerControl> couldUse, Predicate<PlayerControl> canUse, CustomButtonOptions options = null)
     {
         PeasmodPlugin.Logger.LogInfo("CustomButton#Constructor");
         ObjectName = objectName;
@@ -41,15 +39,14 @@ public class CustomButton
         Image = image;
         CouldUse = couldUse;
         CanUse = canUse;
-        Options = options;
+        Options = options ?? new CustomButtonOptions();
         
         CustomButtonManager.AllButtons.Add(this);
         
-        GameEventManager.GameStartEventHandler += Start;
         HudEventManager.HudUpdateEventHandler += Update;
         HudEventManager.HudSetActiveEventHandler += OnHudSetActive;
         
-        if (ShipStatus.Instance != null)
+        if (ShipStatus.Instance != null && Patches.LeftBottomParent != null)
             Start(null, EventArgs.Empty);
     }
     
@@ -64,7 +61,7 @@ public class CustomButton
         _hasBeenCreated = true;
         
         PeasmodPlugin.Logger.LogInfo("CustomButton#Start");
-        Button = GameObject.Instantiate(HudManager.Instance.AbilityButton, HudManager.Instance.AbilityButton.transform.parent);
+        Button = GameObject.Instantiate(HudManager.Instance.AbilityButton, Options.OnLeftSide ? Patches.LeftBottomParent.transform : HudManager.Instance.AbilityButton.transform.parent);
         Button.gameObject.SetActive(CouldBeUsed());
         Button.gameObject.name = ObjectName + "-CustomButton";
         Button.buttonLabelText.GetComponent<TextTranslatorTMP>().Destroy();
@@ -116,7 +113,7 @@ public class CustomButton
         if (Button == null || Button.gameObject == null)
             return;
         
-        Button.gameObject.SetActive(CouldBeUsed() && IsHudActive);
+        Button.gameObject.SetActive(CouldBeUsed() && IsHudActive && Visible);
 
         if (CouldBeUsed() && PlayerControl.LocalPlayer.IsKillTimerEnabled)
         {
@@ -213,7 +210,7 @@ public class CustomButton
         if (MeetingHud.Instance != null) 
             return false;
 
-        if (!Enabled)
+        if (!Visible)
             return false;
 
         return CouldUse.Invoke(PlayerControl.LocalPlayer);
@@ -224,10 +221,13 @@ public class CustomButton
         if (!CouldBeUsed())
             return false;
         
+        if (!Enabled)
+            return false;
+        
         if (PlayerControl.LocalPlayer == null) 
             return false;
-            
-        if (PlayerControl.LocalPlayer.Data == null) 
+
+        if (PlayerControl.LocalPlayer.Data == null)
             return false;
             
         if (!PlayerControl.LocalPlayer.CanMove || PlayerControl.LocalPlayer.inVent) 
@@ -305,9 +305,13 @@ public class CustomButton
         public Color TargetOutline;
         public Func<PlayerControl> PlayerTargetSelector;
         public Func<GameObject> ObjectTargetSelector;
+        public bool OnLeftSide;
 
         public CustomButtonOptions(float maxCooldown = 0f, bool hasEffect = false, float effectDuration = 0f,
-            Action onEffectEnded = null, bool infinitelyUsable = true, int maxUses = 0, TargetType targetType = TargetType.None, Color targetOutline = default, Func<PlayerControl> playerTargetSelector = null, Func<GameObject> objectTargetSelector = null)
+            Action onEffectEnded = null, bool infinitelyUsable = true, int maxUses = 0,
+            TargetType targetType = TargetType.None, Color targetOutline = default,
+            Func<PlayerControl> playerTargetSelector = null, Func<GameObject> objectTargetSelector = null,
+            bool onLeftSide = true)
         {
             MaxCooldown = maxCooldown;
             HasEffect = hasEffect;
@@ -319,6 +323,7 @@ public class CustomButton
             TargetOutline = targetOutline;
             PlayerTargetSelector = playerTargetSelector;
             ObjectTargetSelector = objectTargetSelector;
+            OnLeftSide = onLeftSide;
         }
 
         public enum TargetType

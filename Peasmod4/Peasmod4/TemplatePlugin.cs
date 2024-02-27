@@ -6,13 +6,13 @@ using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
 using Peasmod4.API;
 using Peasmod4.API.Components;
-using Peasmod4.API.Events;
-using Peasmod4.API.UI.EndGame;
 using Peasmod4.API.UI.Options;
 using Peasmod4.Resources;
 using Reactor;
 using Reactor.Patches;
+using UnityEngine;
 using UnityEngine.SceneManagement;
+using EventType = Peasmod4.API.Events.EventType;
 
 namespace Peasmod4;
 
@@ -42,6 +42,16 @@ public partial class PeasmodPlugin : BasePlugin
         RegisterEventListenerAttribute.Load();
     }
 
+    [HarmonyPatch(typeof(KeyboardJoystick), nameof(KeyboardJoystick.Update))]
+    [HarmonyPostfix]
+    private static void SwitchSettingsPagesPatch(KeyboardJoystick __instance)
+    {
+        if (Input.GetKeyDown(KeyCode.F1))
+        {
+            
+        }
+    }
+    
     [RegisterEventListener(EventType.GameStart)]
     public static void TestListener(object sender, EventArgs test)
     {

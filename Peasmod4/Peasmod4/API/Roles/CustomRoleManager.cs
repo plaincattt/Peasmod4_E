@@ -48,7 +48,7 @@ public class CustomRoleManager
         };
         role.MaxCount = customRole.MaxCount;
         role.TasksCountTowardProgress = customRole.HasToDoTasks;
-        role.CanVent = customRole.CanVent;
+        role.CanVent = customRole.CanVent();
         role.CanUseKillButton = customRole.CanKill();
         
         PeasmodPlugin.Logger.LogInfo($"Created RoleBehaviour for Role {customRole.Name}");
