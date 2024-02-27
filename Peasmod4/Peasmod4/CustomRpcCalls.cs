@@ -5,5 +5,6 @@ public enum CustomRpcCalls : uint
     TurnInvisible = 30,
     SpecialVote = 31,
     BuildVent = 32,
-    RevivePlayer = 33
+    RevivePlayer = 33,
+    DragBody = 34
 }

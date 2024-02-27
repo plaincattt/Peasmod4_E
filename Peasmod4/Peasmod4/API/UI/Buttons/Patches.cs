@@ -28,10 +28,10 @@ public class Patches
         gridArrange.Start();
         gridArrange.CheckCurrentChildren();
         gridArrange.ArrangeChilds();
-        
-        foreach (var customButton in CustomButtonManager.AllButtons)
+
+        for (int i = 0; i < CustomButtonManager.AllButtons.Count; i++)
         {
-            customButton.Start(null, EventArgs.Empty);
+            CustomButtonManager.AllButtons[i].Start(null, EventArgs.Empty);
         }
     }
 }
