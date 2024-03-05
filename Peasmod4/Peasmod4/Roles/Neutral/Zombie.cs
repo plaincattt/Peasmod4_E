@@ -8,6 +8,7 @@ using Peasmod4.API.Roles;
 using Peasmod4.API.UI.Buttons;
 using Peasmod4.API.UI.EndGame;
 using Peasmod4.API.UI.Options;
+using Peasmod4.Resources;
 using UnityEngine;
 
 namespace Peasmod4.Roles.Neutral;
@@ -79,7 +80,7 @@ public class Zombie : CustomRole
                     MadeWinCall = true;
                 }
             }, "Infect",
-            Utility.CreateSprite("Peasmod4.Placeholder.png", 128f), player => player.IsCustomRole(this),
+            ResourceManager.PlaceholderButton, player => player.IsCustomRole(this),
             player => player.IsCustomRole(this), new CustomButton.CustomButtonOptions(InfectCooldown.Value, targetType: CustomButton.CustomButtonOptions.TargetType.Player, 
                 playerTargetSelector: () => PlayerControl.LocalPlayer.FindNearestPlayer(player => !player.IsCustomRole(this) && !player.Data.IsDead, Reach.Value + 1), targetOutline: ZombieColor));
         

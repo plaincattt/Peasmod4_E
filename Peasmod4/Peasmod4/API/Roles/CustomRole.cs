@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using BepInEx.Unity.IL2CPP;
 using Peasmod4.API.Events;
+using Peasmod4.Resources;
 using UnityEngine;
 
 namespace Peasmod4.API.Roles;
@@ -36,8 +37,8 @@ public abstract class CustomRole
     /// The color of the Role. Will displayed at the intro, name, task list, game end
     /// </summary>
     public abstract Color Color { get; }
-    
-    public virtual Sprite Icon { get; } = Utility.CreateSprite("Peasmod4.Placeholder.png");
+
+    public virtual Sprite Icon { get; } = ResourceManager.PlaceholderButton;
     
     /// <summary>
     /// Who can see the identity of the player with the Role
@@ -81,7 +82,7 @@ public abstract class CustomRole
     /// <summary>
     /// If a member of the role should be able to kill that player / in general
     /// </summary>
-    public virtual bool CanKill(PlayerControl victim = null) => Team == Enums.Team.Impostor;
+    public virtual bool CanKill(PlayerControl victim = null) => Team == Enums.Team.Impostor && (!victim || !victim.Data.Role.IsImpostor);
 
     /// <summary>
     /// If a member of the role should be able to use vents

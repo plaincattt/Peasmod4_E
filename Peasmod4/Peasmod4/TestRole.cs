@@ -6,6 +6,7 @@ using Peasmod4.API.Roles;
 using Peasmod4.API.UI.Buttons;
 using Peasmod4.API.UI.EndGame;
 using Peasmod4.API.UI.Options;
+using Peasmod4.Resources;
 using Peasmod4.Roles.Abilities;
 using Reactor.Networking.Rpc;
 using UnityEngine;
@@ -109,7 +110,7 @@ public class TestRole : CustomRole
                 }
                 PeasmodPlugin.Logger.LogInfo("test8: " + (usable == null));
                 */
-            }, "Hallo", Utility.CreateSprite("Peasmod4.Placeholder.png", 128f), 
+            }, "Hallo", ResourceManager.PlaceholderButton, 
             player => player.IsCustomRole(this), player => player.IsCustomRole(this), new CustomButton.CustomButtonOptions(maxCooldown: 0f, true, 3f,
                 () =>
                 {

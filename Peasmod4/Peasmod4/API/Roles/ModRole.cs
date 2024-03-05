@@ -73,4 +73,19 @@ public class ModRole : RoleBehaviour
         
         return null;
     }
+
+    public void Update()
+    {
+        if (!PlayerControl.LocalPlayer)
+            return;
+
+        if (!PlayerControl.LocalPlayer.IsCustomRole())
+            return;
+        
+        if (CanUseKillButton != PlayerControl.LocalPlayer.GetCustomRole().CanKill())
+        {
+            CanUseKillButton = !CanUseKillButton;
+            HudManager.Instance.SetHudActive(true);
+        }
+    }
 }
