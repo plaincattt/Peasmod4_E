@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
+using Peasmod4.API;
 using Reactor.Utilities;
 using Reactor.Utilities.Extensions;
 using UnityEngine;
@@ -52,5 +54,17 @@ public class Utility
     {
         yield return new WaitForSeconds(timeout);
         action.Invoke();
+    }
+
+    public static List<PlayerControl> GetImpostors(bool aliveOnly = true)
+    {
+        return PlayerControl.AllPlayerControls.WrapToSystem()
+            .FindAll(player => player.Data.Role.IsImpostor && (!player.Data.IsDead || !aliveOnly));
+    }
+    
+    public static List<PlayerControl> GetCrewmates(bool aliveOnly = true)
+    {
+        return PlayerControl.AllPlayerControls.WrapToSystem()
+            .FindAll(player => !player.Data.Role.IsImpostor && (!player.Data.IsDead || !aliveOnly));
     }
 }

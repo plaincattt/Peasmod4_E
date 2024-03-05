@@ -14,7 +14,6 @@ public class Patches
     [RegisterEventListener(EventType.GameStart)]
     public static void AddLeftButtonParent(object sender, EventArgs args)
     {
-        PeasmodPlugin.Logger.LogInfo("Test");
         var buttonsParent = HudManager.Instance.gameObject.transform.FindChild("Buttons");
         LeftBottomParent = GameObject.Instantiate(buttonsParent.FindChild("BottomRight").gameObject, buttonsParent);
         LeftBottomParent.name = "BottomLeft";

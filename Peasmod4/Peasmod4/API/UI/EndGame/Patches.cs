@@ -64,6 +64,7 @@ public class Patches
                 foreach (var player in PlayerControl.AllPlayerControls) // .WrapToSystem().FindAll(player => player.IsCustomRole(customRole))
                 {
                     var _ = false;
+                    PeasmodPlugin.Logger.LogInfo(customRole.Name + ": " + player.name + " - " + customRole.DidWin(endGameResult.GameOverReason, player, ref _));
                     if (customRole.DidWin(endGameResult.GameOverReason, player, ref _) && TempData.winners.WrapToSystem().Find(data => data.PlayerName == player.name) == null)
                         TempData.winners.Add(new WinningPlayerData(player.Data));
                 }

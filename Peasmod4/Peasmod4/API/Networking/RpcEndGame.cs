@@ -35,8 +35,8 @@ public class RpcEndGame : PlayerCustomRpc<PeasmodPlugin, RpcEndGame.Data>
 
     public override Data Read(MessageReader reader)
     {
-        PeasmodPlugin.Logger.LogInfo("Received RpcEndGame");
         var endReason = (GameOverReason)reader.ReadByte();
+        PeasmodPlugin.Logger.LogInfo("Received RpcEndGame : " + endReason);
         return new Data(endReason);
     }
 
@@ -44,8 +44,8 @@ public class RpcEndGame : PlayerCustomRpc<PeasmodPlugin, RpcEndGame.Data>
     {
         if (AmongUsClient.Instance.AmHost)
         {
-            GameManager.Instance.RpcEndGame(data.EndReason, false);
-            //Utility.DoAfterTimeout(() => GameManager.Instance.RpcEndGame(data.EndReason, false), 1f);
+            //GameManager.Instance.RpcEndGame(data.EndReason, false);
+            Utility.DoAfterTimeout(() => GameManager.Instance.RpcEndGame(data.EndReason, false), 0.5f);
         }
     }
 }
