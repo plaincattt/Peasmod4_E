@@ -35,6 +35,7 @@
     
     <ItemGroup>
         <EmbeddedResource Include="Resources/Buttons/*" />
+        <EmbeddedResource Include="Resources/Other/*" />
     </ItemGroup>
 
     <Target Name="Copy" AfterTargets="Build" Condition="'$(AmongUs)' != ''">
