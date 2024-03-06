@@ -22,7 +22,7 @@
         <!--<Reference Include="$(AmongUs)\BepInEx\plugins\PeasAPI.dll" />-->
         <PackageReference Include="Reactor" Version="2.2.0" />
         <PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be.674" />
-        <PackageReference Include="AmongUs.GameLibs.Steam" Version="2023.11.28">
+        <PackageReference Include="AmongUs.GameLibs.Steam" Version="2024.3.5">
           <PrivateAssets>all</PrivateAssets>
         </PackageReference>
 
