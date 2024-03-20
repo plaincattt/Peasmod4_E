@@ -4,6 +4,7 @@ public enum EventType
 {
     // Game events
     GameStart,
+    GameJoined,
     GameEnd,
     // Hud events
     HudUpdate,

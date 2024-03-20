@@ -16,4 +16,15 @@ public class GameEventManager
             Reason = reason;
         }
     }
+
+    public static EventHandler<GameJoinedEventArgs> GameJoinedEventHandler;
+    public class GameJoinedEventArgs : EventArgs
+    {
+        public string LobbyCode;
+
+        public GameJoinedEventArgs(string lobbyCode)
+        {
+            LobbyCode = lobbyCode;
+        }
+    }
 }

@@ -44,6 +44,13 @@ public class RegisterEventListenerAttribute : Attribute
                             }
                             GameEventManager.GameStartEventHandler += (sender, eventArgs) => method.Invoke(null, new[] { sender, eventArgs });
                             break;
+                        case EventType.GameJoined:
+                            if (senderParameter.ParameterType != typeof(object) || args.ParameterType != typeof(GameEventManager.GameJoinedEventArgs))
+                            {
+                                throw new InvalidOperationException($"Method {method.FullDescription()} must have parameters sender of type object and args of type GameJoinedEventArgs.");
+                            }
+                            GameEventManager.GameJoinedEventHandler += (sender, eventArgs) => method.Invoke(null, new[] { sender, eventArgs });
+                            break;
                         case EventType.GameEnd:
                             if (senderParameter.ParameterType != typeof(object) || args.ParameterType != typeof(GameEventManager.GameEndEventArgs))
                             {

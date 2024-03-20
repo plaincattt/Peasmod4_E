@@ -15,6 +15,13 @@ public class Patches
         if (AmongUsClient.Instance.NetworkMode == NetworkModes.FreePlay)
             GameEventManager.GameStartEventHandler?.Invoke(null, EventArgs.Empty);
     }
+
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnGameJoined))]
+    public static void GameJoinedPatch([HarmonyArgument(0)] string lobbyCode)
+    {
+        GameEventManager.GameJoinedEventHandler?.Invoke(null, new GameEventManager.GameJoinedEventArgs(lobbyCode));
+    }
     
     [HarmonyPostfix]
     [HarmonyPatch(typeof(GameManager), nameof(GameManager.EndGame))]
