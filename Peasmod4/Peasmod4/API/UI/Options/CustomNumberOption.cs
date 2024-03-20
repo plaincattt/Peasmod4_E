@@ -82,7 +82,7 @@ public class CustomNumberOption : CustomOption
         return option;
     }
 
-    public CustomNumberOption(string id, string title, float defaultValue, NumberSuffixes suffix, float increment, FloatRange range, bool isDecimal, bool zeroIsInfinity = false) : base(title)
+    public CustomNumberOption(string id, string title, float defaultValue, NumberSuffixes suffix, float increment, FloatRange range, bool isDecimal = false, bool zeroIsInfinity = false) : base(title)
     {
         Assembly = Assembly.GetCallingAssembly();
         Id = $"{Assembly.GetName().Name}.NumberOption.{id}";

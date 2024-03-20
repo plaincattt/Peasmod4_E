@@ -21,7 +21,7 @@ public class Doctor : CustomRole
     public Doctor(Assembly assembly) : base(assembly)
     {
         ReviveCooldown = new CustomNumberOption("Doctor.ReviveCooldown", "Revive cooldown", 20f, NumberSuffixes.Seconds,
-            5f, new FloatRange(0f, 120f), false);
+            5f, new FloatRange(0f, 120f));
         RoleOption = new CustomRoleOption(this, true, ReviveCooldown);
 
         GameEventManager.GameStartEventHandler += OnGameStart;

@@ -20,7 +20,7 @@ public class Captain : CustomRole
         GameEventManager.GameStartEventHandler += OnStart;
 
         CallCooldownOption =
-            new CustomNumberOption("CaptainCallingCooldown", "Calling cooldown", 10, NumberSuffixes.Seconds, 1, new FloatRange(10, 60), false);
+            new CustomNumberOption("CaptainCallingCooldown", "Calling cooldown", 10, NumberSuffixes.Seconds, 1, new FloatRange(10, 60));
         RoleOption = new CustomRoleOption(this, true, CallCooldownOption);
     }
 

@@ -29,7 +29,7 @@ public class Inspector : CustomRole
     public override bool HasToDoTasks => true;
 
     public CustomNumberOption FootstepVisibleTimeOption = new CustomNumberOption("Inspector.FootstepVisibleTime",
-        "Time footsteps stay visible", 5f, NumberSuffixes.Seconds, 1f, new FloatRange(1f, 20f), false);
+        "Time footsteps stay visible", 5f, NumberSuffixes.Seconds, 1f, new FloatRange(1f, 20f));
     public CustomNumberOption TimeBetweenOption = new CustomNumberOption("Inspector.TimeBetween",
         "Time between each footstep", 1f, NumberSuffixes.Seconds, 0.2f, new FloatRange(0.2f, 2f), true);
     public CustomRoleOption RoleOption;

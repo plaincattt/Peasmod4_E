@@ -269,7 +269,7 @@ public class Patches
             for (int i = 0; i < scroller.Inner.childCount; i++)
             {
                 var child = scroller.Inner.GetChild(i);
-                child.gameObject.SetActive(child.position.y < 4);
+                child.gameObject.SetActive(child.position.y < GameObject.Find("RolesChancesGroup/Text").transform.position.y);
             }
         });
         scroller.ContentYBounds.max =

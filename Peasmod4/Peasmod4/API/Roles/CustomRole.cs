@@ -64,8 +64,8 @@ public abstract class CustomRole
             }
         }
     }
-        
-    public abstract bool HasToDoTasks { get; }
+
+    public virtual bool HasToDoTasks => Team == Enums.Team.Crewmate;
 
     public int Count;
     
