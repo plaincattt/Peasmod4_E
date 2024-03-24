@@ -325,4 +325,47 @@ public class Patches
             }
         }
     }
+    
+    private static float HudTextSize = 1.4f;
+    private static Scroller OptionsScroller;
+    
+    [HarmonyPatch(typeof(HudManager), nameof(HudManager.Update))]
+    [HarmonyPostfix]
+    private static void HudManagerUpdatePatch(HudManager __instance)
+    {
+        if (__instance.GameSettings == null)
+            return;
+            
+        __instance.GameSettings.fontSizeMin =
+            __instance.GameSettings.fontSizeMax = 
+                __instance.GameSettings.fontSize = HudTextSize;
+            
+        CreateScroller(__instance);
+        
+        var bottomLeft = Camera.main.ScreenToWorldPoint(new Vector3(0, 0, 0)) - Camera.main.transform.localPosition;
+
+        OptionsScroller.SetYBoundsMin(-bottomLeft.y - 0.1f);
+        OptionsScroller.SetYBoundsMax(Mathf.Max(-bottomLeft.y - 0.1f, __instance.GameSettings.renderedHeight - -bottomLeft.y + 0.1f));
+    }
+
+    //THIS BIT IS SKIDDED FROM ESSENTIALS: https://github.com/DorCoMaNdO/Reactor-Essentials
+    private static void CreateScroller(HudManager hudManager)
+    {
+        if (OptionsScroller != null) return;
+
+        OptionsScroller = new GameObject("OptionsScroller").AddComponent<Scroller>();
+        OptionsScroller.transform.SetParent(hudManager.GameSettings.transform.parent);
+        OptionsScroller.gameObject.layer = 5;
+
+        OptionsScroller.transform.localScale = Vector3.one;
+        OptionsScroller.allowX = false;
+        OptionsScroller.allowY = true;
+        OptionsScroller.active = true;
+        OptionsScroller.velocity = new Vector2(0, 0);
+        OptionsScroller.ContentYBounds = new FloatRange(0, 0);
+        OptionsScroller.enabled = true;
+
+        OptionsScroller.Inner = hudManager.GameSettings.transform;
+        hudManager.GameSettings.transform.SetParent(OptionsScroller.transform);
+    }
 }
