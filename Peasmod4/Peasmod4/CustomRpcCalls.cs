@@ -8,5 +8,6 @@ public enum CustomRpcCalls : uint
     BuildVent = 32,
     RevivePlayer = 33,
     DragBody = 34,
-    RemoveBody = 35
+    RemoveBody = 35,
+    StopMovement = 36
 }
